@@ -96,6 +96,8 @@ em.acc, .acc { font-family: var(--serif); font-style: italic; color: var(--blue-
   width: 0; background: var(--blue); transition: width .25s ease;
 }
 .nav a:not(.btn):hover::after { width: 100%; }
+/* .nav a's ink color outranks .btn's white; restate for the pill CTA */
+.nav a.btn, .nav a.btn:hover { color: var(--white); }
 
 .nav-toggle {
   display: none; background: none; border: 1.5px solid var(--ink);
@@ -357,8 +359,11 @@ a.card:hover, .card:hover { transform: translateY(-5px); box-shadow: 0 20px 48px
 .btn-lg { padding: 18px 36px; font-size: .87rem; }
 .btn-primary { background: var(--ink); }
 .section-pale, .section-cream { background: var(--white); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.cta-band .btn-ghost { color: var(--white); border-color: rgba(255,255,255,.4); }
-.cta-band .btn-ghost:hover { background: var(--white); color: var(--ink); }
+/* .cta-band .btn paints a white background; without restating background here
+   the ghost variant rendered white-on-white (invisible text). Keep all three
+   properties together at higher specificity. */
+.cta-band .btn.btn-ghost, .band-dark .btn.btn-ghost { background: transparent; color: var(--white); border-color: rgba(255,255,255,.4); }
+.cta-band .btn.btn-ghost:hover, .band-dark .btn.btn-ghost:hover { background: var(--white); color: var(--ink); border-color: var(--white); }
 
 /* ---------- FAQ ---------- */
 details.faq { border-bottom: 1px solid var(--line); padding: 24px 0; }
@@ -385,15 +390,8 @@ details.faq .faq-body p:last-child { margin-bottom: 0; }
     var(--ink);
   color: rgba(247,245,240,.72); padding: 96px 0 36px;
 }
-.footer-mark {
-  font-family: var(--serif); font-weight: 400; color: var(--white);
-  font-size: clamp(3rem, 9vw, 6.4rem); line-height: .98; letter-spacing: -.015em;
-}
-.footer-mark span {
-  display: block; font-family: var(--sans); font-weight: 700;
-  font-size: clamp(.85rem, 1.8vw, 1.3rem); letter-spacing: .58em;
-  color: var(--blue); margin-top: 14px;
-}
+/* Adam's actual logo, single-color white so it reads on the dark footer */
+.footer-logo-img { width: clamp(250px, 30vw, 400px); height: auto; display: block; }
 .footer-grid { display: grid; grid-template-columns: 1.7fr 1fr 1fr; gap: 48px; margin-top: 64px; }
 .site-footer h4 {
   color: var(--steel); font-size: .72rem; font-family: var(--sans);
