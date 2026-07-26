@@ -83,7 +83,7 @@ em.acc, .acc { font-family: var(--serif); font-style: italic; color: var(--blue-
   gap: 24px; max-width: var(--maxw); margin: 0 auto; padding: 10px 28px;
 }
 .logo { display: flex; align-items: center; text-decoration: none; }
-.logo img { height: 56px; width: auto; display: block; }
+.logo img { height: 82px; width: auto; display: block; }
 
 .nav { display: flex; align-items: center; gap: 36px; }
 .nav a {
@@ -432,7 +432,7 @@ details.faq .faq-body p:last-child { margin-bottom: 0; }
 @media (max-width: 680px) {
   section { padding: 70px 0; }
   .hero { padding: 66px 0 58px; }
-  .logo img { height: 46px; }
+  .logo img { height: 60px; }
   .band-dark, .cta-band { margin: 0 10px; border-radius: 20px; }
   .cta-band { margin-bottom: 70px; }
   .index-row { grid-template-columns: 1fr; gap: 6px; padding: 28px 8px; }
