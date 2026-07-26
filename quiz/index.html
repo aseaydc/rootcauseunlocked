@@ -7,20 +7,23 @@
 <title>Root Cause Symptom Assessment | Root Cause Unlocked</title>
 <style>
 :root {
-  --primary: #1A5FA8;
-  --primary-mid: #2B7FD4;
-  --primary-light: #3B8FE5;
-  --primary-pale: #E3F0FB;
-  --cta: #2D5016;
-  --cta-hover: #3d6b1f;
-  --warm-white: #F6FAFF;
-  --cream: #EBF4FC;
-  --text-dark: #0D2A45;
-  --text-mid: #2A4A6A;
-  --text-light: #5A7A9A;
-  --border: #B0CDE8;
+  /* Palette v2 (2026-07-25): aligned with the site design system, colors
+     derived from the actual logo fills (#5987C5 cornflower, #ACBFD1 steel,
+     black). CTA buttons are ink black to match rootcauseunlocked.com. */
+  --primary: #3A66A4;
+  --primary-mid: #5987C5;
+  --primary-light: #7FA3D6;
+  --primary-pale: #EAF0F8;
+  --cta: #0E0E10;
+  --cta-hover: #3A66A4;
+  --warm-white: #F7F5F0;
+  --cream: #EFECE5;
+  --text-dark: #0E0E10;
+  --text-mid: #2E2E35;
+  --text-light: #5D5D57;
+  --border: #E2DFD7;
   --radius: 10px;
-  --shadow: 0 4px 18px rgba(26,95,168,0.11);
+  --shadow: 0 4px 18px rgba(14,14,16,0.08);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);color:var(--text-dark);min-height:100vh;}
@@ -101,9 +104,9 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);
 .btn-nav{padding:11px 26px;border-radius:24px;font-family:Arial,sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.18s;letter-spacing:0.02em;border:2px solid var(--primary);}
 .btn-prev{background:#fff;color:var(--primary);}
 .btn-prev:hover{background:var(--primary-pale);}
-.btn-next{background:var(--primary);color:#fff;box-shadow:0 4px 14px rgba(26,95,168,0.25);}
+.btn-next{background:var(--primary);color:#fff;box-shadow:0 4px 14px rgba(58,102,164,0.25);}
 .btn-next:hover{background:var(--primary-mid);transform:translateY(-2px);}
-.btn-generate{background:var(--cta);color:#fff;border-color:var(--cta);box-shadow:0 4px 16px rgba(45,80,22,0.3);}
+.btn-generate{background:var(--cta);color:#fff;border-color:var(--cta);box-shadow:0 4px 16px rgba(14,14,16,0.3);}
 .btn-generate:hover{background:var(--cta-hover);transform:translateY(-2px);}
 
 /* ======== RESULTS ======== */
@@ -134,8 +137,8 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);
 .programs-card h3{color:var(--primary);font-size:1.02rem;margin-bottom:5px;}
 .programs-card .sub{font-family:Arial,sans-serif;font-size:0.86rem;color:var(--text-mid);margin-bottom:14px;line-height:1.55;}
 .program-btns{display:flex;flex-direction:column;gap:10px;}
-.btn-program{display:flex;align-items:center;justify-content:space-between;background:var(--cta);color:#fff;text-decoration:none;padding:15px 20px;border-radius:var(--radius);font-family:Arial,sans-serif;font-size:0.95rem;font-weight:700;transition:all 0.2s;box-shadow:0 4px 14px rgba(45,80,22,0.22);letter-spacing:0.02em;border:none;cursor:pointer;}
-.btn-program:hover{background:var(--cta-hover);transform:translateY(-2px);box-shadow:0 6px 20px rgba(45,80,22,0.3);}
+.btn-program{display:flex;align-items:center;justify-content:space-between;background:var(--cta);color:#fff;text-decoration:none;padding:15px 20px;border-radius:var(--radius);font-family:Arial,sans-serif;font-size:0.95rem;font-weight:700;transition:all 0.2s;box-shadow:0 4px 14px rgba(14,14,16,0.22);letter-spacing:0.02em;border:none;cursor:pointer;}
+.btn-program:hover{background:var(--cta-hover);transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,14,16,0.3);}
 .btn-program .bp-left{display:flex;align-items:center;gap:10px;}
 .btn-program .bp-icon{font-size:1.15rem;}
 .btn-program .bp-arrow{font-size:1.1rem;opacity:0.75;}
@@ -145,8 +148,8 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);
 .tripwire-card .tw-eyebrow{font-family:Arial,sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--cta);margin-bottom:6px;}
 .tripwire-card h3{color:var(--primary);font-size:1.05rem;margin-bottom:8px;}
 .tripwire-card p{font-family:Arial,sans-serif;font-size:0.88rem;color:var(--text-mid);line-height:1.6;margin-bottom:14px;}
-.btn-tripwire{display:inline-block;background:var(--cta);color:#fff;text-decoration:none;padding:13px 24px;border-radius:28px;font-family:Arial,sans-serif;font-size:0.93rem;font-weight:700;box-shadow:0 4px 14px rgba(45,80,22,0.22);transition:all 0.2s;letter-spacing:0.02em;max-width:100%;}
-.btn-tripwire:hover{background:var(--cta-hover);transform:translateY(-2px);box-shadow:0 6px 20px rgba(45,80,22,0.3);}
+.btn-tripwire{display:inline-block;background:var(--cta);color:#fff;text-decoration:none;padding:13px 24px;border-radius:28px;font-family:Arial,sans-serif;font-size:0.93rem;font-weight:700;box-shadow:0 4px 14px rgba(14,14,16,0.22);transition:all 0.2s;letter-spacing:0.02em;max-width:100%;}
+.btn-tripwire:hover{background:var(--cta-hover);transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,14,16,0.3);}
 .tripwire-card .tw-note{font-family:Arial,sans-serif;font-size:0.76rem;color:var(--text-light);margin-top:12px;margin-bottom:0;line-height:1.5;}
 
 /* ALL RESULTS */
@@ -838,7 +841,7 @@ function doShowResults() {
 
   // All bars
   document.getElementById('all-bars').innerHTML = scored.map((c, i) => {
-    const color = c.pct >= 60 ? '#c0392b' : c.pct >= 40 ? '#d35400' : c.pct >= 20 ? '#d4ac0d' : '#3B8FE5';
+    const color = c.pct >= 60 ? '#c0392b' : c.pct >= 40 ? '#d35400' : c.pct >= 20 ? '#d4ac0d' : '#5987C5';
     const isTop = i < 3;
     return `<div class="result-row">
       <div class="result-row-top">
@@ -980,7 +983,7 @@ function rcuSaveAndRenderProgress(scored, fname, concern) {
 }
 
 function rcuBandColor(pct) {
-  return pct >= 60 ? '#c0392b' : pct >= 40 ? '#d35400' : pct >= 20 ? '#d4ac0d' : '#3B8FE5';
+  return pct >= 60 ? '#c0392b' : pct >= 40 ? '#d35400' : pct >= 20 ? '#d4ac0d' : '#5987C5';
 }
 
 function rcuRenderDomainStrip(entry, prev) {
