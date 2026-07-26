@@ -7,31 +7,25 @@
 <meta name="description" content="Your GLP-1 medication is doing its job. This is the support layer around it: protein, lean mass, cellular recovery, and the long-term metabolic health nobody covers at the pharmacy counter.">
 <meta property="og:title" content="Unlock Your GLP-1">
 <meta property="og:description" content="A companion to your GLP-1 prescription, never a replacement for it. Protect muscle, nutrition, and long-term metabolic health while the weight comes off.">
-<meta property="og:image" content="/assets/logo.png">
+<meta property="og:image" content="/assets/logo-lockup.png">
 <meta property="og:type" content="website">
-<link rel="icon" href="/assets/logo.png">
+<link rel="icon" href="/assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="logo" href="/">
-      <svg viewBox="0 0 26 32" fill="none" aria-hidden="true">
-        <path d="M6.5 13V8.5a6.5 6.5 0 0 1 13 0V13" stroke="#A8C4E2" stroke-width="3" stroke-linecap="round"/>
-        <rect x="2" y="13" width="22" height="17" rx="3" fill="#3B8FE5"/>
-        <circle cx="13" cy="20" r="2.6" fill="#0D2A45"/>
-        <path d="M13 22.2v3.4" stroke="#0D2A45" stroke-width="2.2" stroke-linecap="round"/>
-      </svg>
-      <span class="logo-text"><span class="lt-1">ROOT CAUSE</span><span class="lt-2">UNLOCKED</span></span>
+    <a class="logo" href="/" aria-label="Root Cause Unlocked home">
+      <img src="/assets/logo-header.png" alt="Root Cause Unlocked" width="560" height="330">
     </a>
     <button class="nav-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
     <nav class="nav">
       <a href="/programs">Programs</a>
-      <a href="/discovery">Discovery Session</a>
+      <a href="/discovery">Discovery</a>
       <a href="/about">About</a>
       <a class="btn" href="/quiz">Take the assessment</a>
     </nav>
@@ -42,7 +36,7 @@
 
 <section class="hero">
   <div class="wrap">
-    <p class="eyebrow">Metabolic</p>
+    <p class="label">Metabolic</p>
     <h1>Unlock Your GLP-1</h1>
     <p class="lead">Your medication is working. The appetite change is real, the scale is moving, and
     the metabolic benefits are genuine. What a fifteen minute prescribing visit rarely covers is the
@@ -60,7 +54,7 @@
 
 <section>
   <div class="wrap narrow">
-    <p class="eyebrow">Recognition</p>
+    <p class="label">Recognition</p>
     <h2>Does this sound like you</h2>
     <ul class="reco" style="margin-top:24px">
       <li>The weight is coming off and you have started to wonder how much of it is fat and how much
@@ -87,7 +81,7 @@
 <section class="section-pale">
   <div class="wrap">
     <div class="center" style="max-width:640px;margin:0 auto 46px">
-      <p class="eyebrow">The support layer</p>
+      <p class="label">The support layer</p>
       <h2>What the companion program covers</h2>
       <p class="lead">Six pieces, all of them additive. Each one targets a documented consequence of
       how fast fat comes off on this class of medication.</p>
@@ -146,7 +140,7 @@
 
 <section>
   <div class="wrap narrow">
-    <p class="eyebrow">The boundary</p>
+    <p class="label">The boundary</p>
     <h2>This runs alongside your medication</h2>
     <p>It is a fair question to ask whether addressing a side effect of a medication means working
     against the medication. It does not. GLP-1 receptor activity has documented protective effects of
@@ -192,17 +186,9 @@
 
 <footer class="site-footer">
   <div class="wrap">
+    <div class="footer-mark">Root Cause<span>Unlocked</span></div>
     <div class="footer-grid">
       <div>
-        <div class="footer-logo">
-          <svg viewBox="0 0 26 32" fill="none" aria-hidden="true">
-            <path d="M6.5 13V8.5a6.5 6.5 0 0 1 13 0V13" stroke="#5A7A9A" stroke-width="3" stroke-linecap="round"/>
-            <rect x="2" y="13" width="22" height="17" rx="3" fill="#3B8FE5"/>
-            <circle cx="13" cy="20" r="2.6" fill="#0D2A45"/>
-            <path d="M13 22.2v3.4" stroke="#0D2A45" stroke-width="2.2" stroke-linecap="round"/>
-          </svg>
-          <span class="logo-text"><span class="lt-1">ROOT CAUSE</span><span class="lt-2">UNLOCKED</span></span>
-        </div>
         <p>Educational resources for people whose symptoms have outlasted their explanations.</p>
       </div>
       <div>
@@ -242,6 +228,10 @@
     var open = n.classList.toggle('open');
     t.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 </script>
 
 </body>
