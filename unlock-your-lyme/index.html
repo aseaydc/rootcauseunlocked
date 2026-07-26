@@ -7,31 +7,25 @@
 <meta name="description" content="Migrating pain, deep exhaustion, and neurologic symptoms that no single test has explained. An educational look at tick-borne illness, co-infections, and what a careful assessment actually considers.">
 <meta property="og:title" content="Unlock Your Lyme">
 <meta property="og:description" content="For people with migrating pain, deep exhaustion, and neurologic symptoms that no single test has explained.">
-<meta property="og:image" content="/assets/logo.png">
+<meta property="og:image" content="/assets/logo-lockup.png">
 <meta property="og:type" content="website">
-<link rel="icon" href="/assets/logo.png">
+<link rel="icon" href="/assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="logo" href="/">
-      <svg viewBox="0 0 26 32" fill="none" aria-hidden="true">
-        <path d="M6.5 13V8.5a6.5 6.5 0 0 1 13 0V13" stroke="#A8C4E2" stroke-width="3" stroke-linecap="round"/>
-        <rect x="2" y="13" width="22" height="17" rx="3" fill="#3B8FE5"/>
-        <circle cx="13" cy="20" r="2.6" fill="#0D2A45"/>
-        <path d="M13 22.2v3.4" stroke="#0D2A45" stroke-width="2.2" stroke-linecap="round"/>
-      </svg>
-      <span class="logo-text"><span class="lt-1">ROOT CAUSE</span><span class="lt-2">UNLOCKED</span></span>
+    <a class="logo" href="/" aria-label="Root Cause Unlocked home">
+      <img src="/assets/logo-header.png" alt="Root Cause Unlocked" width="560" height="330">
     </a>
     <button class="nav-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
     <nav class="nav">
       <a href="/programs">Programs</a>
-      <a href="/discovery">Discovery Session</a>
+      <a href="/discovery">Discovery</a>
       <a href="/about">About</a>
       <a class="btn" href="/quiz">Take the assessment</a>
     </nav>
@@ -42,7 +36,7 @@
 
 <section class="hero">
   <div class="wrap">
-    <p class="eyebrow">Tick-borne</p>
+    <p class="label">Tick-borne</p>
     <h1>Unlock Your Lyme</h1>
     <p class="lead">Pain that moves. Exhaustion that sleep does not touch. Neurologic symptoms that
     every visit has treated as a separate problem. If one test came back negative and you were told
@@ -57,7 +51,7 @@
 
 <section>
   <div class="wrap narrow">
-    <p class="eyebrow">Does this sound like you</p>
+    <p class="label">Does this sound like you</p>
     <h2>The pattern that keeps getting explained away.</h2>
     <ul class="reco" style="margin-top:26px">
       <li>Joint pain that migrates, showing up in one place for days or weeks and then moving to
@@ -85,7 +79,7 @@
 <section class="section-pale">
   <div class="wrap">
     <div class="center" style="max-width:660px;margin:0 auto 46px">
-      <p class="eyebrow">What actually gets looked at</p>
+      <p class="label">What actually gets looked at</p>
       <h2>Six questions a careful tick-borne assessment asks</h2>
       <p class="lead">Most people who stay stuck are not stuck because nothing was done. They are stuck
       because only one piece of the picture was ever examined.</p>
@@ -138,7 +132,7 @@
 
 <section class="section-cream">
   <div class="wrap narrow">
-    <p class="eyebrow">Honest limits</p>
+    <p class="label">Honest limits</p>
     <h2>What this work can offer, and what nobody can</h2>
     <p>Tick-borne illness is one of the genuinely contested areas of medicine, and you have probably
     already felt that. Reasonable clinicians disagree about testing, about what counts as ongoing
@@ -174,17 +168,9 @@
 
 <footer class="site-footer">
   <div class="wrap">
+    <div class="footer-mark">Root Cause<span>Unlocked</span></div>
     <div class="footer-grid">
       <div>
-        <div class="footer-logo">
-          <svg viewBox="0 0 26 32" fill="none" aria-hidden="true">
-            <path d="M6.5 13V8.5a6.5 6.5 0 0 1 13 0V13" stroke="#5A7A9A" stroke-width="3" stroke-linecap="round"/>
-            <rect x="2" y="13" width="22" height="17" rx="3" fill="#3B8FE5"/>
-            <circle cx="13" cy="20" r="2.6" fill="#0D2A45"/>
-            <path d="M13 22.2v3.4" stroke="#0D2A45" stroke-width="2.2" stroke-linecap="round"/>
-          </svg>
-          <span class="logo-text"><span class="lt-1">ROOT CAUSE</span><span class="lt-2">UNLOCKED</span></span>
-        </div>
         <p>Educational resources for people whose symptoms have outlasted their explanations.</p>
       </div>
       <div>
@@ -224,6 +210,10 @@
     var open = n.classList.toggle('open');
     t.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 </script>
 
 </body>

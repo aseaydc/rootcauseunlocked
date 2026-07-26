@@ -7,31 +7,25 @@
 <meta name="description" content="A free conversation about what your symptom pattern actually suggests, what is worth investigating, and what is not. No obligation to continue.">
 <meta property="og:title" content="The Root Discovery Session">
 <meta property="og:description" content="A free conversation about what your symptom pattern suggests and what is worth investigating.">
-<meta property="og:image" content="/assets/logo.png">
+<meta property="og:image" content="/assets/logo-lockup.png">
 <meta property="og:type" content="website">
-<link rel="icon" href="/assets/logo.png">
+<link rel="icon" href="/assets/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/styles.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="header-inner">
-    <a class="logo" href="/">
-      <svg viewBox="0 0 26 32" fill="none" aria-hidden="true">
-        <path d="M6.5 13V8.5a6.5 6.5 0 0 1 13 0V13" stroke="#A8C4E2" stroke-width="3" stroke-linecap="round"/>
-        <rect x="2" y="13" width="22" height="17" rx="3" fill="#3B8FE5"/>
-        <circle cx="13" cy="20" r="2.6" fill="#0D2A45"/>
-        <path d="M13 22.2v3.4" stroke="#0D2A45" stroke-width="2.2" stroke-linecap="round"/>
-      </svg>
-      <span class="logo-text"><span class="lt-1">ROOT CAUSE</span><span class="lt-2">UNLOCKED</span></span>
+    <a class="logo" href="/" aria-label="Root Cause Unlocked home">
+      <img src="/assets/logo-header.png" alt="Root Cause Unlocked" width="560" height="330">
     </a>
     <button class="nav-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
     <nav class="nav">
       <a href="/programs">Programs</a>
-      <a href="/discovery">Discovery Session</a>
+      <a href="/discovery">Discovery</a>
       <a href="/about">About</a>
       <a class="btn" href="/quiz">Take the assessment</a>
     </nav>
@@ -42,7 +36,7 @@
 
 <section class="hero">
   <div class="wrap">
-    <p class="eyebrow">No cost · About 20 minutes</p>
+    <p class="label">No cost · About 20 minutes</p>
     <h1>The Root Discovery Session</h1>
     <p class="lead">A straight conversation about what your symptom pattern suggests, what would
     actually be worth investigating, and whether this practice is the right place for it. If it is
@@ -58,7 +52,7 @@
 <section>
   <div class="wrap">
     <div class="center" style="max-width:640px;margin:0 auto 46px">
-      <p class="eyebrow">What actually happens</p>
+      <p class="label">What actually happens</p>
       <h2>Four things, in twenty minutes</h2>
     </div>
     <div class="grid grid-2">
@@ -94,7 +88,7 @@
 
 <section class="section-pale">
   <div class="wrap narrow">
-    <p class="eyebrow">Honest fit</p>
+    <p class="label">Honest fit</p>
     <h2>Who this is for, and who it is not</h2>
     <div class="grid grid-2" style="margin-top:30px">
       <div class="card">
@@ -127,7 +121,7 @@
 
 <section>
   <div class="wrap narrow">
-    <p class="eyebrow">Before you book</p>
+    <p class="label">Before you book</p>
     <h2>How to make the twenty minutes count</h2>
     <ul class="checks" style="margin-top:22px">
       <li><strong>Take the assessment first.</strong> It maps your symptoms across systems and gives
@@ -146,7 +140,7 @@
 
 <section class="section-cream">
   <div class="wrap narrow">
-    <p class="eyebrow">Questions</p>
+    <p class="label">Questions</p>
     <h2>Common questions</h2>
     <div style="margin-top:26px">
       <details class="faq">
@@ -210,17 +204,9 @@
 
 <footer class="site-footer">
   <div class="wrap">
+    <div class="footer-mark">Root Cause<span>Unlocked</span></div>
     <div class="footer-grid">
       <div>
-        <div class="footer-logo">
-          <svg viewBox="0 0 26 32" fill="none" aria-hidden="true">
-            <path d="M6.5 13V8.5a6.5 6.5 0 0 1 13 0V13" stroke="#5A7A9A" stroke-width="3" stroke-linecap="round"/>
-            <rect x="2" y="13" width="22" height="17" rx="3" fill="#3B8FE5"/>
-            <circle cx="13" cy="20" r="2.6" fill="#0D2A45"/>
-            <path d="M13 22.2v3.4" stroke="#0D2A45" stroke-width="2.2" stroke-linecap="round"/>
-          </svg>
-          <span class="logo-text"><span class="lt-1">ROOT CAUSE</span><span class="lt-2">UNLOCKED</span></span>
-        </div>
         <p>Educational resources for people whose symptoms have outlasted their explanations.</p>
       </div>
       <div>
@@ -260,6 +246,10 @@
     var open = n.classList.toggle('open');
     t.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 </script>
 
 </body>
