@@ -394,7 +394,7 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);
   <div class="programs-card" id="rcu-tracker-cta">
     <h3>Track what changes</h3>
     <p class="sub">Log a 30 second daily check-in, watch your trends, and bring a clean progress report to your next visit.</p>
-    <a href="rcu-tracker.html" class="btn-program"><span class="bp-left">Open Root Tracker</span><span class="bp-arrow">&#8594;</span></a>
+    <a href="/tracker" class="btn-program"><span class="bp-left">Open Root Tracker</span><span class="bp-arrow">&#8594;</span></a>
   </div>
 
   <div class="disclaimer">
@@ -707,7 +707,26 @@ function generateResults() {
 const RELAY_INTAKE_URL = 'https://YOUR-RELAY-DEPLOYMENT/api/intake';
 const RELAY_INTAKE_KEY = 'PASTE_ROOT_HEALTH_INTAKE_KEY';
 const RELAY_PROGRAM = 'comprehensive'; // umbrella entry, enrolls on trigger quiz_completed:comprehensive
-const BOOKING_URL = 'https://seaywellness.janeapp.com/'; // TODO Adam: swap to rootcauseunlocked.com/discovery once that page is confirmed live
+const BOOKING_URL = 'https://seaywellness.janeapp.com/'; // live Jane scheduler, confirmed working
+const DISCOVERY_URL = 'https://rootcauseunlocked.com/discovery';
+
+// ---- Program page routing for the results CTA. Only the ids below have a real
+// program page built on the site. Every other condition sends the visitor to
+// /discovery to book the free Root Discovery Session.
+// HISTORY: each CONDITIONS entry still carries a legacy url: field pointing at a
+// per-condition slug (/ibs, /reflux-gerd, and so on). Those pages were never built
+// and all 54 of them returned 404, so nothing reads that field any more. Do not
+// wire it back up. Adding a real condition page later means adding one line here
+// and nothing else. ----
+const PROGRAM_PAGE_BY_CONDITION = {
+  candida:    'https://rootcauseunlocked.com/unlock-your-candida',
+  leakygut:   'https://rootcauseunlocked.com/unlock-your-gut',
+  dysbiosis:  'https://rootcauseunlocked.com/unlock-your-gut',
+  sibo:       'https://rootcauseunlocked.com/unlock-your-gut',
+  lyme:       'https://rootcauseunlocked.com/unlock-your-lyme',
+  hashimotos: 'https://rootcauseunlocked.com/unlock-your-hashimotos',
+  neuropathy: 'https://rootcauseunlocked.com/unlock-your-neuropathy'
+};
 
 // ---- Tripwire ebook offer (Unlock Your series). Paste the real Stripe Payment
 // Links below after creating them; until then the placeholders keep the card
@@ -836,8 +855,10 @@ function doShowResults() {
 
   // Single CTA for top-scoring condition
   const top = scored[0];
-  const topUrl = top.url || 'https://rootcauseunlocked.com';
-  document.getElementById('program-btns').innerHTML = `<a href="${topUrl}" class="btn-program" target="_blank"><span class="bp-left">Learn More: ${top.name}</span><span class="bp-arrow">&#8594;</span></a>`;
+  const topProgramUrl = PROGRAM_PAGE_BY_CONDITION[top.id];
+  const topUrl = topProgramUrl || DISCOVERY_URL;
+  const topLabel = topProgramUrl ? `Learn More: ${top.name}` : 'Your Next Step: The Root Discovery Session';
+  document.getElementById('program-btns').innerHTML = `<a href="${topUrl}" class="btn-program" target="_blank"><span class="bp-left">${topLabel}</span><span class="bp-arrow">&#8594;</span></a>`;
 
   // All bars
   document.getElementById('all-bars').innerHTML = scored.map((c, i) => {

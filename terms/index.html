@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms of Use · Root Cause Unlocked</title>
+<meta name="description" content="The terms for using Root Cause Unlocked, including the educational nature of the assessment and this site's content.">
+<meta property="og:title" content="Terms of Use · Root Cause Unlocked">
+<meta property="og:description" content="The terms for using this site and its free assessment.">
+<meta property="og:image" content="/assets/logo-lockup.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="/assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="/" aria-label="Root Cause Unlocked home">
+      <img src="/assets/logo-header.png" alt="Root Cause Unlocked" width="560" height="330">
+    </a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+    <nav class="nav">
+      <a href="/programs">Programs</a>
+      <a href="/discovery">Discovery</a>
+      <a href="/about">About</a>
+      <a class="btn" href="/quiz">Take the assessment</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="label">Terms</p>
+    <h1>Terms of Use</h1>
+    <p class="lead">Short, in plain language, because nobody actually reads the long version.
+    Last updated 2026.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap narrow">
+    <h2>The assessment is educational, not a diagnosis</h2>
+    <p>The symptom assessment, the Root Tracker, and everything else on this site are educational
+    tools. They are built to help you organize a symptom pattern and think about where it might
+    be worth investigating. They do not diagnose any condition, and a result on this site is not a
+    medical finding.</p>
+
+    <h2>No doctor and patient relationship</h2>
+    <p>Using this site, taking the assessment, or submitting your contact information does not
+    create a doctor and patient relationship with Adam Seay, D.C., or with Root Health NC. That
+    relationship begins only once you have scheduled and completed an actual visit with the
+    practice.</p>
+
+    <h2>No guarantee of results</h2>
+    <p>Nothing on this site is a promise or a guarantee of any particular health outcome. Every
+    person's situation is different, and past results described anywhere on this site, if any, do
+    not predict what will happen for you.</p>
+
+    <div class="callout">
+      <p><strong>See a qualified provider.</strong> If you have a medical concern, especially an
+      urgent one, talk to your physician or another qualified health provider, or seek emergency
+      care. Do not delay care because of anything you read here.</p>
+    </div>
+
+    <h2>This site's content belongs to the practice</h2>
+    <p>The text, design, assessment logic, and other content on this site are the intellectual
+    property of Root Health NC. You are welcome to read it and share a link to it. Copying it,
+    republishing it, or using it to build a competing tool is not permitted without asking first.</p>
+
+    <h2>Changes</h2>
+    <p>These terms may be updated from time to time as the site changes. Questions about them can
+    be sent to <a href="mailto:info@seaywellness.com">info@seaywellness.com</a>.</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <img class="footer-logo-img" src="/assets/logo-footer.png" alt="Root Cause Unlocked" width="760" height="448">
+    <div class="footer-grid">
+      <div>
+        <p>Educational resources for people whose symptoms have outlasted their explanations.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="/quiz">Free assessment</a></li>
+          <li><a href="/programs">Programs</a></li>
+          <li><a href="/discovery">Discovery Session</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Programs</h4>
+        <ul class="footer-links">
+          <li><a href="/unlock-your-hashimotos">Hashimoto's</a></li>
+          <li><a href="/unlock-your-gut">Gut</a></li>
+          <li><a href="/unlock-your-lyme">Lyme</a></li>
+          <li><a href="/unlock-your-mold">Mold Toxicity</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul class="footer-links">
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Use</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p><strong>Medical disclaimer.</strong> The content on this site is for educational purposes only
+      and is not medical advice, diagnosis, or treatment. It does not create a doctor and patient
+      relationship. Always seek the advice of your physician or other qualified health provider with any
+      questions about a medical condition. Never disregard professional medical advice or delay seeking
+      it because of something you read here. Do not start, stop, or change any medication without the
+      prescribing clinician.</p>
+      <p>Root Cause Unlocked is an educational project of Root Health NC. &copy; 2026 All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  var t = document.querySelector('.nav-toggle'), n = document.querySelector('.nav');
+  t.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    t.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+</script>
+
+</body>
+</html>

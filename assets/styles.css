@@ -392,7 +392,7 @@ details.faq .faq-body p:last-child { margin-bottom: 0; }
 }
 /* Adam's actual logo, single-color white so it reads on the dark footer */
 .footer-logo-img { width: clamp(250px, 30vw, 400px); height: auto; display: block; }
-.footer-grid { display: grid; grid-template-columns: 1.7fr 1fr 1fr; gap: 48px; margin-top: 64px; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; margin-top: 64px; }
 .site-footer h4 {
   color: var(--steel); font-size: .72rem; font-family: var(--sans);
   font-weight: 700; letter-spacing: .24em; text-transform: uppercase; margin: 0 0 18px;
