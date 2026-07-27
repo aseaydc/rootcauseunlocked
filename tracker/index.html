@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Root Tracker | Root Cause Unlocked</title>
+<link rel="icon" href="data:,">
+<style>
+:root {
+  /* Palette v2 (2026-07-27): aligned with the quiz and the site design system,
+     colors derived from the actual logo fills (#5987C5 cornflower, #ACBFD1
+     steel, black). CTA buttons are ink black to match rootcauseunlocked.com.
+     Values are kept identical to the quiz's :root on purpose: the tracker and
+     the quiz are sibling app surfaces and hand off to each other. */
+  --primary: #3A66A4;
+  --primary-mid: #5987C5;
+  --primary-light: #7FA3D6;
+  --primary-pale: #EAF0F8;
+  --cta: #0E0E10;
+  --cta-hover: #3A66A4;
+  --warm-white: #F7F5F0;
+  --cream: #EFECE5;
+  --text-dark: #0E0E10;
+  --text-mid: #2E2E35;
+  --text-light: #5D5D57;
+  --border: #E2DFD7;
+  --radius: 10px;
+  --shadow: 0 4px 18px rgba(14,14,16,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);color:var(--text-dark);min-height:100vh;}
+
+/* HEADER */
+.site-header{background:var(--primary);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.18);}
+.header-inner{max-width:920px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.logo-text h1{font-size:1.25rem;font-weight:700;color:#fff;line-height:1.1;}
+.logo-text p{font-size:0.72rem;color:#a0ccf0;font-family:Arial,sans-serif;letter-spacing:0.05em;text-transform:uppercase;margin-top:3px;}
+.header-badge{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#c0e0ff;padding:5px 13px;border-radius:20px;font-size:0.72rem;font-family:Arial,sans-serif;letter-spacing:0.04em;white-space:nowrap;}
+
+/* DEMO BANNER */
+.demo-banner{background:#fdf6e3;border-bottom:2px solid #d4ac0d;padding:9px 16px;display:flex;align-items:center;justify-content:center;gap:14px;font-family:Arial,sans-serif;font-size:0.83rem;color:#7a6206;flex-wrap:wrap;}
+.demo-banner button{background:#fff;border:1.5px solid #d4ac0d;color:#7a6206;border-radius:16px;padding:5px 14px;font-family:Arial,sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;}
+.demo-banner button:hover{background:#faf0d0;}
+
+/* MAIN + TABS */
+.main-wrap{max-width:920px;margin:0 auto;padding:22px 16px 60px;}
+.tab-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+.tab-btn{padding:8px 16px;border:2px solid var(--border);border-radius:20px;background:#fff;color:var(--text-mid);font-family:Arial,sans-serif;font-size:0.83rem;font-weight:600;cursor:pointer;transition:all 0.18s;white-space:nowrap;}
+.tab-btn:hover{border-color:var(--primary-mid);color:var(--primary);}
+.tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+section.tab{display:none;}
+section.tab.active{display:block;}
+
+/* CARDS */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:18px;box-shadow:var(--shadow);}
+.card h3{color:var(--primary);font-size:1.02rem;margin-bottom:12px;border-bottom:2px solid var(--primary-pale);padding-bottom:7px;}
+.card .sub{font-family:Arial,sans-serif;font-size:0.85rem;color:var(--text-mid);line-height:1.6;margin-bottom:12px;}
+.muted{font-family:Arial,sans-serif;font-size:0.78rem;color:var(--text-light);line-height:1.55;}
+
+/* BUTTONS */
+.btn{display:inline-block;background:var(--primary);color:#fff;border:2px solid var(--primary);text-decoration:none;padding:11px 24px;border-radius:24px;font-family:Arial,sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.18s;letter-spacing:0.02em;text-align:center;}
+.btn:hover{background:var(--primary-mid);border-color:var(--primary-mid);transform:translateY(-1px);}
+.btn.cta{background:var(--cta);border-color:var(--cta);}
+.btn.cta:hover{background:var(--cta-hover);border-color:var(--cta-hover);}
+.btn.ghost{background:#fff;color:var(--primary);}
+.btn.ghost:hover{background:var(--primary-pale);}
+.btn:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+
+/* TODAY: SCALES */
+.today-date{color:var(--primary);font-size:1.35rem;margin-bottom:4px;}
+.scale-block{padding:12px 0;border-bottom:1px solid var(--primary-pale);}
+.scale-block:last-of-type{border-bottom:none;}
+.scale-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.scale-name{font-size:0.95rem;font-weight:700;color:var(--text-dark);}
+.scale-val{font-family:Arial,sans-serif;font-size:0.78rem;color:var(--text-light);}
+.scale-btns{display:flex;gap:8px;}
+.scale-btn{flex:1;max-width:64px;height:52px;border:2px solid var(--border);border-radius:12px;background:#fff;color:var(--text-mid);font-family:Arial,sans-serif;font-size:1.05rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.scale-btn:hover{border-color:var(--primary-mid);background:var(--primary-pale);}
+.scale-btn.on{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 3px 10px rgba(14,14,16,0.22);}
+.scale-ends{display:flex;justify-content:space-between;max-width:352px;margin-top:5px;font-family:Arial,sans-serif;font-size:0.72rem;color:var(--text-light);}
+.note-wrap{margin-top:14px;}
+.note-wrap label{display:block;font-family:Arial,sans-serif;font-size:0.81rem;color:var(--text-mid);font-weight:600;margin-bottom:5px;}
+.note-wrap textarea{width:100%;min-height:64px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:Arial,sans-serif;font-size:0.87rem;color:var(--text-dark);background:var(--warm-white);outline:none;resize:vertical;}
+.note-wrap textarea:focus{border-color:var(--primary-mid);}
+.note-count{font-family:Arial,sans-serif;font-size:0.72rem;color:var(--text-light);text-align:right;margin-top:3px;}
+.save-row{margin-top:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.save-hint{font-family:Arial,sans-serif;font-size:0.78rem;color:var(--text-light);}
+
+/* STREAK */
+.streak-card{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-mid) 100%);color:#fff;border-radius:var(--radius);padding:20px 22px;margin-bottom:18px;text-align:center;}
+.streak-num{font-size:2rem;font-weight:700;}
+.streak-msg{font-family:Arial,sans-serif;font-size:0.86rem;color:#c0e0ff;margin-top:5px;line-height:1.5;}
+.streak-freeze{font-family:Arial,sans-serif;font-size:0.78rem;color:#ffe9a8;margin-top:7px;}
+
+/* PROGRESS TO INSIGHTS */
+.unlock-wrap{margin-top:4px;}
+.unlock-line{font-family:Arial,sans-serif;font-size:0.83rem;color:var(--text-mid);margin-bottom:6px;}
+.unlock-track{background:var(--primary-pale);border-radius:6px;height:9px;overflow:hidden;}
+.unlock-fill{height:100%;background:var(--cta);border-radius:6px;transition:width 0.4s ease;}
+
+/* TRENDS */
+.week-line{font-family:Arial,sans-serif;font-size:0.86rem;color:var(--text-mid);padding:5px 0;border-bottom:1px dashed var(--primary-pale);line-height:1.5;}
+.week-line:last-child{border-bottom:none;}
+.week-line b{color:var(--primary);}
+.chart-block{margin-bottom:16px;}
+.chart-title{font-family:Arial,sans-serif;font-size:0.82rem;font-weight:700;color:var(--text-dark);margin-bottom:4px;}
+.chart-block canvas{width:100%;height:auto;display:block;background:var(--warm-white);border:1px solid var(--primary-pale);border-radius:8px;}
+.insight-row{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:11px 14px;margin-bottom:9px;font-family:Arial,sans-serif;font-size:0.86rem;color:var(--text-mid);line-height:1.55;}
+
+/* ASSESSMENTS */
+.assess-item{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;background:var(--warm-white);}
+.assess-date{font-family:Arial,sans-serif;font-size:0.78rem;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;}
+.assess-top3{font-family:Arial,sans-serif;font-size:0.85rem;color:var(--text-mid);line-height:1.6;margin-bottom:10px;}
+.domain-row{display:flex;gap:6px;align-items:flex-end;}
+.domain-col{flex:1;text-align:center;}
+.domain-bar-track{background:var(--primary-pale);border-radius:4px;height:42px;display:flex;align-items:flex-end;overflow:hidden;}
+.domain-bar{width:100%;background:var(--primary-mid);border-radius:4px 4px 0 0;}
+.domain-pct{font-family:Arial,sans-serif;font-size:0.62rem;color:var(--text-light);margin-top:2px;}
+.delta-line{font-family:Arial,sans-serif;font-size:0.85rem;color:var(--text-mid);padding:4px 0;line-height:1.5;}
+.delta-line .down{color:var(--cta);font-weight:700;}
+.delta-line .up{color:#c0392b;font-weight:700;}
+.chip{display:inline-block;background:var(--primary-pale);border:1px solid var(--primary-light);color:var(--primary);border-radius:16px;padding:5px 14px;font-family:Arial,sans-serif;font-size:0.79rem;font-weight:700;}
+.retake-banner{background:var(--cream);border:2px solid var(--cta);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.retake-banner p{font-family:Arial,sans-serif;font-size:0.87rem;color:var(--text-mid);line-height:1.5;}
+.retake-form{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.retake-form input[type=date]{padding:8px 11px;border:1.5px solid var(--border);border-radius:6px;font-family:Arial,sans-serif;font-size:0.85rem;color:var(--text-dark);background:var(--warm-white);}
+
+/* REPORT */
+.report-sheet{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow);}
+.report-sheet h2{color:var(--primary);font-size:1.25rem;margin-bottom:2px;}
+.report-meta{font-family:Arial,sans-serif;font-size:0.8rem;color:var(--text-light);margin-bottom:14px;}
+.report-sheet h4{color:var(--primary);font-size:0.92rem;margin:16px 0 7px;border-bottom:1.5px solid var(--primary-pale);padding-bottom:4px;}
+.report-line{font-family:Arial,sans-serif;font-size:0.84rem;color:var(--text-mid);padding:2.5px 0;line-height:1.5;}
+.report-disclaimer{font-family:Arial,sans-serif;font-size:0.76rem;color:var(--text-light);margin-top:16px;border-top:1px solid var(--primary-pale);padding-top:10px;line-height:1.5;}
+
+/* SHARE */
+.share-preview{max-width:420px;margin:0 auto 16px;}
+.share-preview canvas{width:100%;height:auto;display:block;border-radius:14px;box-shadow:var(--shadow);}
+
+/* EMPTY STATES + TOAST */
+.empty-card{background:var(--cream);border:1.5px dashed var(--border);border-radius:var(--radius);padding:26px 22px;text-align:center;margin-bottom:18px;}
+.empty-card p{font-family:Arial,sans-serif;font-size:0.9rem;color:var(--text-mid);line-height:1.6;margin-bottom:14px;}
+.empty-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(80px);background:var(--text-dark);color:#fff;font-family:Arial,sans-serif;font-size:0.85rem;padding:11px 22px;border-radius:24px;box-shadow:0 6px 22px rgba(0,0,0,0.3);transition:transform 0.25s ease;z-index:300;max-width:92vw;text-align:center;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+
+@media(max-width:680px){
+  .header-inner{padding:11px 14px;}
+  .header-badge{display:none;}
+  .main-wrap{padding:16px 10px 50px;}
+  .tab-btn{padding:7px 11px;font-size:0.76rem;}
+  .card{padding:15px 14px;}
+  .scale-btns{gap:6px;}
+  .scale-btn{height:48px;max-width:none;}
+  .scale-ends{max-width:none;}
+  .report-sheet{padding:18px 15px;}
+}
+
+/* PRINT: only the report sheet prints */
+@media print{
+  .site-header,.tab-nav,.demo-banner,button,.btn,#toast,.no-print{display:none !important;}
+  section.tab{display:none !important;}
+  section#tab-report{display:block !important;}
+  body{background:#fff;}
+  .main-wrap{padding:0;max-width:none;}
+  .report-sheet{border:none;box-shadow:none;padding:0;font-size:0.92em;}
+  @page{margin:14mm;}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-text">
+      <h1>Root Tracker</h1>
+      <p>Root Cause Unlocked &middot; Root Health NC</p>
+    </div>
+    <div class="header-badge">Daily Companion</div>
+  </div>
+</header>
+
+<div id="demoBannerWrap"></div>
+
+<div class="main-wrap">
+  <nav class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-tab="today">Today</button>
+    <button class="tab-btn" data-tab="trends">Trends</button>
+    <button class="tab-btn" data-tab="assess">Assessments</button>
+    <button class="tab-btn" data-tab="report">Report</button>
+    <button class="tab-btn" data-tab="share">Share</button>
+  </nav>
+
+  <section class="tab active" id="tab-today">
+    <div class="card">
+      <h2 class="today-date" id="todayDate"></h2>
+      <p class="sub">How was today? Tap one rating for each area.</p>
+      <div id="scalesWrap"></div>
+      <div class="note-wrap">
+        <label for="noteField">Anything worth remembering? (optional)</label>
+        <textarea id="noteField" maxlength="200" placeholder="Sleep, food, stress, wins, anything."></textarea>
+        <div class="note-count" id="noteCount">0/200</div>
+      </div>
+      <div class="save-row">
+        <button class="btn cta" id="saveBtn" disabled>Save today</button>
+        <span class="save-hint" id="saveHint">Tap a rating for each of the five areas.</span>
+      </div>
+    </div>
+    <div id="streakWrap"></div>
+    <div id="unlockTodayWrap"></div>
+  </section>
+
+  <section class="tab" id="tab-trends">
+    <div id="trendsWrap"></div>
+  </section>
+
+  <section class="tab" id="tab-assess">
+    <div id="assessWrap"></div>
+  </section>
+
+  <section class="tab" id="tab-report">
+    <div id="reportWrap"></div>
+  </section>
+
+  <section class="tab" id="tab-share">
+    <div id="shareWrap"></div>
+  </section>
+</div>
+
+<footer class="no-print" style="max-width:920px;margin:6px auto 0;padding:18px 16px 40px;text-align:center;border-top:1px solid var(--border);">
+  <p class="muted"><a href="/privacy" style="color:var(--text-light);text-decoration:underline;">Privacy Policy</a> &middot; <a href="/terms" style="color:var(--text-light);text-decoration:underline;">Terms of Use</a> &middot; <a href="/contact" style="color:var(--text-light);text-decoration:underline;">Contact</a></p>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ================= CONSTANTS + DATA CONTRACTS =================
+   K_ASSESS "rcu_assessments": READ ONLY here, written by index.html.
+   Pinned schema: array oldest-first of
+   { v:1, ts:"ISO", firstName, concern,
+     tabs:[ {id:0-7,label,checked,total,pct} x8 ],
+     top3:[ {id,name,pct} x3 ],
+     conditions:[ {id,pct} x54 ],
+     checkedSymptoms:{ "<conditionId>":[indexes] } }
+   K_CHECK "rcu_checkins": OWNED here. Array of
+   { d:"YYYY-MM-DD", energy:1-5, sleep:1-5, digestion:1-5,
+     mood:1-5, pain:1-5, note:"max 200 chars" }
+   one per date, sorted ascending, capped at most recent 400.
+   K_PREFS "rcu_prefs": OWNED here.
+   { v:1, retakeTarget:"YYYY-MM-DD"|null, freezeUsedMonth:"YYYY-MM"|null }
+================================================================ */
+const K_ASSESS = 'rcu_assessments';
+const K_CHECK  = 'rcu_checkins';
+const K_PREFS  = 'rcu_prefs';
+const CHECKIN_CAP = 400;
+const INSIGHT_MIN = 7;
+
+const METRICS = [
+  { k:'energy',    label:'Energy',        lo:'1 = Drained', hi:'5 = Energized' },
+  { k:'sleep',     label:'Sleep quality', lo:'1 = Poor',    hi:'5 = Great' },
+  { k:'digestion', label:'Digestion',     lo:'1 = Rough',   hi:'5 = Smooth' },
+  { k:'mood',      label:'Mood',          lo:'1 = Low',     hi:'5 = Bright' },
+  { k:'pain',      label:'Pain',          lo:'1 = None',    hi:'5 = Severe' }
+];
+const PAIRS = [
+  { a:'sleep', b:'energy' },
+  { a:'digestion', b:'mood' },
+  { a:'pain', b:'energy' }
+];
+const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* ---------------- demo sample constants (in-memory only, never persisted) ---------------- */
+const DEMO_TAB_LABELS = ['Gut & Digestive','Brain & Nervous System','Immune & Autoimmune','Hormonal & Metabolic','Skin & Structural','Toxicity & Infections','Musculoskeletal','Organ Support'];
+const DEMO_TOTALS    = [104,80,48,72,40,32,48,8];
+const DEMO_CHECKED_1 = [64,36,18,39,12,8,16,1];
+const DEMO_CHECKED_2 = [46,30,15,34,9,5,14,1];
+const DEMO_CPCT_1 = [75,63,58,55,52,50,48,47,46, 44,43,42,40,38,36,35,33,32, 30,29,28,27,26,25,25,24,23, 22,21,20,19,18,17,16,15,14, 13,13,12,11,10,10,9,8,8, 7,6,5,4,3,2,1,0,0];
+const DEMO_CPCT_2 = [50,38,45,44,42,41,40,36,35, 40,33,32,31,30,29,28,27,26, 25,25,24,23,22,21,20,19,18, 17,17,16,15,14,13,13,12,11, 10,10,9,9,8,8,7,6,5, 5,4,4,3,3,2,2,1,0];
+const DEMO_IDS3 = ['leakygut','candida','adrenal'];
+/* per row: [daysAgo, sleep, energy, digestion, mood, pain, note] */
+const DEMO_CHECKIN_SPECS = [
+  [13,2,2,3,3,3,'Rough night'],
+  [12,2,2,2,2,4,''],
+  [11,4,4,3,4,2,''],
+  [10,5,4,4,4,1,'Felt good today'],
+  [9, 2,3,2,3,4,''],
+  [8, 4,4,4,4,2,''],
+  [7, 3,3,3,3,3,''],
+  [6, 5,5,4,5,1,'Great day, long walk'],
+  [5, 2,2,2,2,4,''],
+  [4, 4,4,3,4,2,''],
+  [2, 5,4,4,4,1,''],
+  [1, 3,3,3,3,2,'Steady']
+];
+function buildDemoAssessment(daysBack, checkedArr, cpctArr, top3, concern, checkedSymptoms){
+  const d = new Date(); d.setDate(d.getDate() - daysBack); d.setHours(10,30,0,0);
+  return {
+    v:1, ts:d.toISOString(), firstName:'Jordan', concern:concern,
+    tabs: DEMO_TAB_LABELS.map((label,i)=>({ id:i, label:label, checked:checkedArr[i], total:DEMO_TOTALS[i], pct:Math.round(checkedArr[i]/DEMO_TOTALS[i]*100) })),
+    top3: top3,
+    conditions: cpctArr.map((p,i)=>({ id: i<3 ? DEMO_IDS3[i] : 'area'+(i+1), pct:p })),
+    checkedSymptoms: checkedSymptoms
+  };
+}
+const DEMO_ASSESSMENTS = [
+  buildDemoAssessment(38, DEMO_CHECKED_1, DEMO_CPCT_1,
+    [{id:'leakygut',name:'Leaky Gut Syndrome',pct:75},{id:'candida',name:'Candida Overgrowth',pct:63},{id:'adrenal',name:'HPA Axis Dysfunction',pct:58}],
+    'Bloating and afternoon energy crashes',
+    {leakygut:[0,1,2,3,4,5],candida:[0,1,3,4,6],adrenal:[1,2,3,5]}),
+  buildDemoAssessment(6, DEMO_CHECKED_2, DEMO_CPCT_2,
+    [{id:'leakygut',name:'Leaky Gut Syndrome',pct:50},{id:'adrenal',name:'HPA Axis Dysfunction',pct:45},{id:'candida',name:'Candida Overgrowth',pct:38}],
+    'Bloating and afternoon energy crashes',
+    {leakygut:[0,2,4,5],adrenal:[1,2,5],candida:[0,3,6]})
+];
+const DEMO_CHECKINS = DEMO_CHECKIN_SPECS.map(function(r){
+  const d = new Date(); d.setDate(d.getDate() - r[0]);
+  return { d: dstr(d), sleep:r[1], energy:r[2], digestion:r[3], mood:r[4], pain:r[5], note:r[6] };
+}).sort(function(a,b){ return a.d < b.d ? -1 : 1; });
+const DEMO_PREFS = { v:1, retakeTarget:null, freezeUsedMonth:null };
+
+/* ---------------- tiny helpers ---------------- */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function pad2(n){ return (n<10?'0':'')+n; }
+function dstr(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function parseD(s){ const p=s.split('-'); return new Date(+p[0], +p[1]-1, +p[2], 12, 0, 0); }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function todayStr(){ return dstr(new Date()); }
+function daysAgoStr(n){ return dstr(addDays(new Date(), -n)); }
+function curMonth(){ const d=new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1); }
+function fmtNice(ds){ const d=parseD(ds); return MONTHS[d.getMonth()].slice(0,3)+' '+d.getDate(); }
+function fmtLongDate(d){ return WEEKDAYS[d.getDay()]+', '+MONTHS[d.getMonth()]+' '+d.getDate(); }
+function fmtFull(d){ return MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear(); }
+function r1(n){ return (Math.round(n*10)/10).toFixed(1); }
+function avgOf(arr){ if(!arr.length) return null; return arr.reduce(function(a,b){return a+b;},0)/arr.length; }
+function andify(label){ return String(label).replace(/\s*&\s*/g,' and '); }
+let toastTimer=null;
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove('show'); },2400); }
+
+/* ---------------- state + storage access ---------------- */
+let demoMode = false;
+let state = { checkins:[], prefs:{ v:1, retakeTarget:null, freezeUsedMonth:null } };
+let todaySel = { energy:null, sleep:null, digestion:null, mood:null, pain:null };
+
+function readAssessmentsRaw(){
+  try{
+    const raw = localStorage.getItem(K_ASSESS);
+    if(!raw) return [];
+    const arr = JSON.parse(raw);
+    if(!Array.isArray(arr)) return [];
+    return arr.filter(function(e){ return e && Array.isArray(e.tabs) && e.tabs.length && Array.isArray(e.top3); });
+  }catch(e){ return []; }
+}
+function realAssessments(){ return readAssessmentsRaw(); }
+function isDemoAssess(){ return demoMode && realAssessments().length === 0; }
+function currentAssessments(){ const real=realAssessments(); if(real.length) return real; return demoMode ? DEMO_ASSESSMENTS : []; }
+function isDemoCheckins(){ return demoMode && state.checkins.length === 0; }
+function currentCheckins(){ if(state.checkins.length) return state.checkins; return demoMode ? DEMO_CHECKINS : []; }
+function currentPrefs(){ return isDemoCheckins() ? DEMO_PREFS : state.prefs; }
+
+/* ===== SECTION A: storage load/save + today + streak (build step a) ===== */
+function loadState(){
+  try{
+    const c = JSON.parse(localStorage.getItem(K_CHECK) || '[]');
+    state.checkins = Array.isArray(c) ? c.filter(function(e){ return e && typeof e.d==='string'; }) : [];
+  }catch(e){ state.checkins = []; }
+  state.checkins.sort(function(a,b){ return a.d < b.d ? -1 : 1; });
+  try{
+    const p = JSON.parse(localStorage.getItem(K_PREFS) || 'null');
+    if(p && typeof p==='object'){ state.prefs = { v:1, retakeTarget: p.retakeTarget || null, freezeUsedMonth: p.freezeUsedMonth || null }; }
+  }catch(e){ /* keep defaults */ }
+}
+function persistCheckins(){
+  state.checkins.sort(function(a,b){ return a.d < b.d ? -1 : 1; });
+  if(state.checkins.length > CHECKIN_CAP) state.checkins = state.checkins.slice(-CHECKIN_CAP);
+  try{ localStorage.setItem(K_CHECK, JSON.stringify(state.checkins)); }catch(e){ toast('Could not save. Storage may be full.'); }
+}
+function persistPrefs(){
+  try{ localStorage.setItem(K_PREFS, JSON.stringify(state.prefs)); }catch(e){ /* non-fatal */ }
+}
+function buildScales(){
+  const wrap = $('scalesWrap');
+  wrap.innerHTML = METRICS.map(function(m){
+    const btns = [1,2,3,4,5].map(function(v){
+      return '<button type="button" class="scale-btn" data-k="'+m.k+'" data-v="'+v+'">'+v+'</button>';
+    }).join('');
+    return '<div class="scale-block">'+
+      '<div class="scale-top"><span class="scale-name">'+m.label+'</span><span class="scale-val" id="val-'+m.k+'"></span></div>'+
+      '<div class="scale-btns">'+btns+'</div>'+
+      '<div class="scale-ends"><span>'+m.lo+'</span><span>'+m.hi+'</span></div>'+
+    '</div>';
+  }).join('');
+  wrap.addEventListener('click', function(ev){
+    const b = ev.target.closest('.scale-btn'); if(!b) return;
+    todaySel[b.dataset.k] = +b.dataset.v;
+    paintScales();
+  });
+  $('noteField').addEventListener('input', function(){
+    $('noteCount').textContent = $('noteField').value.length + '/200';
+  });
+  $('saveBtn').addEventListener('click', saveToday);
+}
+function paintScales(){
+  METRICS.forEach(function(m){
+    const sel = todaySel[m.k];
+    document.querySelectorAll('.scale-btn[data-k="'+m.k+'"]').forEach(function(b){
+      b.classList.toggle('on', sel !== null && +b.dataset.v === sel);
+    });
+    $('val-'+m.k).textContent = sel ? ('Rated '+sel+' of 5') : '';
+  });
+  const ready = METRICS.every(function(m){ return todaySel[m.k] !== null; });
+  $('saveBtn').disabled = !ready;
+  $('saveHint').textContent = ready ? '' : 'Tap a rating for each of the five areas.';
+}
+function renderToday(){
+  $('todayDate').textContent = fmtLongDate(new Date());
+  const existing = state.checkins.find(function(c){ return c.d === todayStr(); });
+  if(existing){
+    METRICS.forEach(function(m){ todaySel[m.k] = existing[m.k] || null; });
+    $('noteField').value = existing.note || '';
+    $('saveBtn').textContent = 'Update today';
+  }else{
+    $('saveBtn').textContent = 'Save today';
+  }
+  $('noteCount').textContent = $('noteField').value.length + '/200';
+  paintScales();
+  $('unlockTodayWrap').innerHTML = unlockHTML();
+}
+function saveToday(){
+  if(isDemoCheckins()){ toast('Preview only. Exit the sample preview to save your own check-in.'); return; }
+  const ready = METRICS.every(function(m){ return todaySel[m.k] !== null; });
+  if(!ready) return;
+  const d = todayStr();
+  const entry = { d:d, energy:todaySel.energy, sleep:todaySel.sleep, digestion:todaySel.digestion, mood:todaySel.mood, pain:todaySel.pain, note: $('noteField').value.slice(0,200) };
+  const idx = state.checkins.findIndex(function(c){ return c.d === d; });
+  const updating = idx >= 0;
+  if(updating) state.checkins[idx] = entry; else state.checkins.push(entry);
+  persistCheckins();
+  if(demoMode) demoMode = false;
+  toast(updating ? 'Updated for today.' : 'Saved. See you tomorrow.');
+  renderAll();
+}
+/* Streak: consecutive days ending today or yesterday. One interior missing
+   day can be auto-covered by the monthly freeze (rcu_prefs.freezeUsedMonth). */
+function computeStreak(){
+  const cs = currentCheckins();
+  const prefs = currentPrefs();
+  const have = {}; cs.forEach(function(c){ have[c.d] = true; });
+  const t = new Date();
+  let anchor = null;
+  if(have[dstr(t)]) anchor = new Date(t);
+  else if(have[dstr(addDays(t,-1))]) anchor = addDays(t,-1);
+  if(!anchor) return { n:0, frozeDate:null, usedFresh:false };
+  let n = 0, gapUsed = false, frozeDate = null, usedFresh = false;
+  let cur = new Date(anchor);
+  while(true){
+    const ds = dstr(cur);
+    if(have[ds]){ n++; cur = addDays(cur,-1); continue; }
+    const prevDs = dstr(addDays(cur,-1));
+    const gapMonth = ds.slice(0,7);
+    const fresh = prefs.freezeUsedMonth !== curMonth();
+    const alreadyCovered = !fresh && prefs.freezeUsedMonth === gapMonth;
+    if(!gapUsed && have[prevDs] && (fresh || alreadyCovered)){
+      gapUsed = true; frozeDate = ds; usedFresh = fresh; n++;
+      cur = addDays(cur,-1); continue;
+    }
+    break;
+  }
+  return { n:n, frozeDate:frozeDate, usedFresh:usedFresh };
+}
+function renderStreak(){
+  const cs = currentCheckins();
+  const wrap = $('streakWrap');
+  if(!cs.length){
+    wrap.innerHTML = '<div class="streak-card"><div class="streak-num">Day 0</div><div class="streak-msg">Save your first check-in above and your streak starts today.</div></div>';
+    return;
+  }
+  const s = computeStreak();
+  if(s.frozeDate && s.usedFresh && !isDemoCheckins()){
+    state.prefs.freezeUsedMonth = curMonth();
+    persistPrefs();
+  }
+  const loggedToday = cs.some(function(c){ return c.d === todayStr(); });
+  let head, msg;
+  if(s.n === 0){
+    head = 'Fresh start';
+    msg = loggedToday ? 'Fresh start today. Day 1.' : 'Fresh start today. Log a check-in and day 1 begins.';
+  }else if(s.n === 1 && loggedToday){
+    const priorDays = cs.filter(function(c){ return c.d < todayStr(); }).length;
+    head = 'Day 1';
+    msg = priorDays ? 'Fresh start today. Day 1.' : 'Day 1 in the books.';
+  }else{
+    head = s.n + ' day streak';
+    msg = loggedToday ? 'Checked in today. Keep it rolling.' : 'Check in today to keep it going.';
+  }
+  let freezeLine = '';
+  if(s.frozeDate){
+    const fd = parseD(s.frozeDate);
+    const recent = (new Date() - fd) / 86400000 <= 7;
+    if(recent) freezeLine = '<div class="streak-freeze">Your streak freeze covered '+WEEKDAYS[fd.getDay()]+'.</div>';
+  }
+  wrap.innerHTML = '<div class="streak-card"><div class="streak-num">'+head+'</div><div class="streak-msg">'+msg+'</div>'+freezeLine+'</div>';
+}
+function unlockHTML(){
+  const total = currentCheckins().length;
+  if(total >= INSIGHT_MIN) return '';
+  const need = INSIGHT_MIN - total;
+  const pct = Math.round(total / INSIGHT_MIN * 100);
+  return '<div class="card unlock-wrap"><div class="unlock-line">Log '+need+' more day'+(need===1?'':'s')+' to unlock your first pattern.</div>'+
+    '<div class="unlock-track"><div class="unlock-fill" style="width:'+pct+'%"></div></div></div>';
+}
+
+/* ===== SECTION B: trends charts + weekly summary + insights (build step b) ===== */
+function metricAvgInWindow(cs, key, fromDs, toDs){
+  const vals = cs.filter(function(c){ return c.d >= fromDs && c.d <= toDs && typeof c[key]==='number'; }).map(function(c){ return c[key]; });
+  return { avg: avgOf(vals), n: vals.length };
+}
+function weeklySummaryHTML(cs){
+  const lines = METRICS.map(function(m){
+    const tw = metricAvgInWindow(cs, m.k, daysAgoStr(6), todayStr());
+    const lw = metricAvgInWindow(cs, m.k, daysAgoStr(13), daysAgoStr(7));
+    let txt;
+    if(tw.avg === null && lw.avg === null){ txt = 'no check-ins in the last two weeks.'; }
+    else if(tw.avg === null){ txt = 'no check-ins this week yet.'; }
+    else if(lw.avg === null){ txt = r1(tw.avg)+' average this week.'; }
+    else{
+      const diff = tw.avg - lw.avg;
+      if(Math.abs(diff) < 0.05) txt = r1(tw.avg)+' average, level with last week.';
+      else txt = r1(tw.avg)+' average, '+(diff>0?'up ':'down ')+r1(Math.abs(diff))+' from last week.';
+    }
+    return '<div class="week-line"><b>'+m.label+':</b> '+txt+'</div>';
+  }).join('');
+  return '<div class="card"><h3>This week vs last week</h3>'+lines+'</div>';
+}
+function drawMetricChart(canvas, cs, key){
+  const W = 640, H = 170, L = 30, R = 10, T = 12, B = 24;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const days = [];
+  for(let i=29;i>=0;i--){
+    const ds = daysAgoStr(i);
+    const e = cs.find(function(c){ return c.d === ds; });
+    days.push({ ds:ds, v: e && typeof e[key]==='number' ? e[key] : null });
+  }
+  const xFor = function(i){ return L + (W-L-R) * (i/29); };
+  const yFor = function(v){ return T + (H-T-B) * (1 - (v-1)/4); };
+  ctx.strokeStyle = '#EAF0F8'; ctx.lineWidth = 1;
+  ctx.fillStyle = '#5A7A9A'; ctx.font = '11px Arial'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for(let v=1; v<=5; v++){
+    const y = yFor(v);
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W-R, y); ctx.stroke();
+    ctx.fillText(String(v), L-6, y);
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  [29,15,0].forEach(function(ago){
+    const i = 29-ago;
+    ctx.fillText(fmtNice(daysAgoStr(ago)), xFor(i), H-B+6);
+  });
+  /* raw daily values: dots, lines only between consecutive days */
+  ctx.strokeStyle = '#7FA3D6'; ctx.fillStyle = '#7FA3D6'; ctx.lineWidth = 1.4;
+  for(let i=1;i<30;i++){
+    if(days[i].v !== null && days[i-1].v !== null){
+      ctx.beginPath(); ctx.moveTo(xFor(i-1), yFor(days[i-1].v)); ctx.lineTo(xFor(i), yFor(days[i].v)); ctx.stroke();
+    }
+  }
+  for(let i=0;i<30;i++){
+    if(days[i].v !== null){ ctx.beginPath(); ctx.arc(xFor(i), yFor(days[i].v), 2.6, 0, Math.PI*2); ctx.fill(); }
+  }
+  /* 7 day rolling average */
+  const roll = days.map(function(d,i){
+    const vals = [];
+    for(let j=Math.max(0,i-6); j<=i; j++){ if(days[j].v !== null) vals.push(days[j].v); }
+    return vals.length ? avgOf(vals) : null;
+  });
+  ctx.strokeStyle = '#3A66A4'; ctx.lineWidth = 2.4;
+  let started = false;
+  ctx.beginPath();
+  for(let i=0;i<30;i++){
+    if(roll[i] === null){ started = false; continue; }
+    if(!started){ ctx.moveTo(xFor(i), yFor(roll[i])); started = true; }
+    else ctx.lineTo(xFor(i), yFor(roll[i]));
+  }
+  ctx.stroke();
+}
+function pairInsights(cs){
+  const out = [];
+  PAIRS.forEach(function(p){
+    const hi = cs.filter(function(c){ return c[p.a] >= 4; });
+    const lo = cs.filter(function(c){ return c[p.a] <= 2; });
+    if(hi.length < 3 || lo.length < 3) return;
+    const hAvg = avgOf(hi.map(function(c){ return c[p.b]; }));
+    const lAvg = avgOf(lo.map(function(c){ return c[p.b]; }));
+    const gap = hAvg - lAvg;
+    if(Math.abs(gap) < 0.7) return;
+    const dir = gap > 0 ? 'higher' : 'lower';
+    out.push('On days you rated '+p.a+' 4 or higher, your '+p.b+' averaged '+r1(Math.abs(gap))+' points '+dir+' (based on '+(hi.length+lo.length)+' check-ins).');
+  });
+  return out;
+}
+function weekdayInsights(cs){
+  const out = [];
+  METRICS.forEach(function(m){
+    const byDay = [[],[],[],[],[],[],[]];
+    cs.forEach(function(c){ if(typeof c[m.k]==='number') byDay[parseD(c.d).getDay()].push(c[m.k]); });
+    const cands = [];
+    for(let d=0; d<7; d++){ if(byDay[d].length >= 2) cands.push({ d:d, avg: avgOf(byDay[d]) }); }
+    if(cands.length < 2) return;
+    let best = cands[0], worst = cands[0];
+    cands.forEach(function(c){ if(c.avg > best.avg) best = c; if(c.avg < worst.avg) worst = c; });
+    if(best.d === worst.d || Math.abs(best.avg - worst.avg) < 0.05) return;
+    out.push('Your '+m.k+' tends to be highest on '+WEEKDAYS[best.d]+'s and lowest on '+WEEKDAYS[worst.d]+'s.');
+  });
+  return out;
+}
+function insightsHTML(cs){
+  if(cs.length < INSIGHT_MIN){
+    const need = INSIGHT_MIN - cs.length;
+    const pct = Math.round(cs.length / INSIGHT_MIN * 100);
+    return '<div class="card"><h3>Insights</h3>'+
+      '<div class="unlock-line">Log '+need+' more day'+(need===1?'':'s')+' to unlock your first pattern.</div>'+
+      '<div class="unlock-track"><div class="unlock-fill" style="width:'+pct+'%"></div></div></div>';
+  }
+  const all = pairInsights(cs).concat(weekdayInsights(cs)).slice(0,4);
+  const body = all.length
+    ? all.map(function(t){ return '<div class="insight-row">'+t+'</div>'; }).join('')
+    : '<p class="sub">No clear pattern stands out yet. Keep logging and check back.</p>';
+  return '<div class="card"><h3>Insights</h3>'+body+'<p class="muted">Based on your own check-ins on this device.</p></div>';
+}
+function renderTrends(){
+  const cs = currentCheckins();
+  const wrap = $('trendsWrap');
+  if(!cs.length){
+    wrap.innerHTML = emptyStateHTML('checkins', 'No check-ins yet. Save your first one on the Today tab and your trends start here.');
+    return;
+  }
+  const recent = cs.filter(function(c){ return c.d >= daysAgoStr(29); });
+  let chartsHTML;
+  if(!recent.length){
+    chartsHTML = '<div class="card"><h3>Last 30 days</h3><p class="sub">No check-ins in the last 30 days. Your older history is still saved.</p></div>';
+  }else{
+    chartsHTML = '<div class="card"><h3>Last 30 days</h3>'+
+      METRICS.map(function(m){
+        return '<div class="chart-block"><div class="chart-title">'+m.label+'</div><canvas id="chart-'+m.k+'" width="640" height="170"></canvas></div>';
+      }).join('')+
+      '<p class="muted">Dots show each day\'s rating. The dark line is your 7 day average.</p></div>';
+  }
+  wrap.innerHTML = weeklySummaryHTML(cs) + chartsHTML + insightsHTML(cs);
+  if(recent.length){
+    METRICS.forEach(function(m){ drawMetricChart($('chart-'+m.k), cs, m.k); });
+  }
+}
+
+/* ===== SECTION C: assessments list + comparison + retake planner (build step c) ===== */
+function assessDate(a){ return new Date(a.ts); }
+function assessDateStr(a){ return dstr(new Date(a.ts)); }
+function domainRowHTML(a){
+  return '<div class="domain-row">'+a.tabs.map(function(t){
+    const h = Math.max(3, Math.round(t.pct/100*42));
+    return '<div class="domain-col" title="'+esc(t.label)+': '+t.pct+'%">'+
+      '<div class="domain-bar-track"><div class="domain-bar" style="height:'+h+'px"></div></div>'+
+      '<div class="domain-pct">'+t.pct+'</div></div>';
+  }).join('')+'</div>';
+}
+function deltaLinesHTML(latest, older, sinceLabel){
+  return latest.tabs.map(function(t){
+    const old = older.tabs.find(function(o){ return o.id === t.id; }) || older.tabs[latest.tabs.indexOf(t)];
+    if(!old) return '';
+    const diff = t.pct - old.pct;
+    const name = esc(andify(t.label));
+    if(diff === 0) return '<div class="delta-line">'+name+': unchanged since your '+sinceLabel+' assessment.</div>';
+    const word = diff < 0 ? 'down' : 'up';
+    const cls = diff < 0 ? 'down' : 'up';
+    return '<div class="delta-line">'+name+': <span class="'+cls+'">'+word+' '+Math.abs(diff)+' point'+(Math.abs(diff)===1?'':'s')+'</span> since your '+sinceLabel+' assessment.</div>';
+  }).join('');
+}
+function retakeBannerHTML(list){
+  const prefs = currentPrefs();
+  const latest = list[list.length-1];
+  const latestAge = latest ? Math.floor((new Date() - assessDate(latest)) / 86400000) : null;
+  const targetPassed = prefs.retakeTarget && prefs.retakeTarget <= todayStr();
+  if(!targetPassed && !(latestAge !== null && latestAge > 30)) return '';
+  const why = targetPassed ? 'Your planned retake date is here.' : 'Your last assessment was '+latestAge+' days ago.';
+  return '<div class="retake-banner"><p><strong>'+why+'</strong> A fresh assessment shows what changed.</p>'+
+    '<a class="btn cta" href="/quiz">Retake the assessment</a></div>';
+}
+function retakePlannerHTML(){
+  const prefs = currentPrefs();
+  const def = prefs.retakeTarget || dstr(addDays(new Date(), 30));
+  let chip = '';
+  if(prefs.retakeTarget){
+    const diff = Math.round((parseD(prefs.retakeTarget) - parseD(todayStr())) / 86400000);
+    if(diff > 0) chip = '<span class="chip">Retake planned in '+diff+' day'+(diff===1?'':'s')+'</span>';
+    else if(diff === 0) chip = '<span class="chip">Retake planned for today</span>';
+    else chip = '<span class="chip">Retake date passed</span>';
+  }
+  return '<div class="card"><h3>Plan my retake</h3>'+
+    '<p class="sub">Pick a date to check your progress with a fresh assessment. Around 30 days out works well.</p>'+
+    '<div class="retake-form"><input type="date" id="retakeDate" value="'+def+'"> '+
+    '<button class="btn ghost" id="retakeSave">Save plan</button> '+chip+'</div></div>';
+}
+function renderAssessments(){
+  const list = currentAssessments();
+  const wrap = $('assessWrap');
+  if(!list.length){
+    wrap.innerHTML = emptyStateHTML('assess', 'No assessments here yet. Take the assessment first and your results will show up on this page.');
+    return;
+  }
+  const banner = retakeBannerHTML(list);
+  const items = list.slice().reverse().map(function(a){
+    const top3 = a.top3.map(function(t,i){ return (i+1)+'. '+esc(t.name)+' ('+t.pct+'%)'; }).join(' &middot; ');
+    return '<div class="assess-item"><div class="assess-date">'+fmtFull(assessDate(a))+'</div>'+
+      '<div class="assess-top3">'+top3+'</div>'+domainRowHTML(a)+'</div>';
+  }).join('');
+  let compare = '';
+  if(list.length >= 2){
+    const latest = list[list.length-1];
+    const prev = list[list.length-2];
+    const first = list[0];
+    compare = '<div class="card"><h3>What changed</h3>';
+    if(prev !== first){
+      compare += '<p class="sub"><strong>Since your previous assessment ('+fmtNice(assessDateStr(prev))+'):</strong></p>'+deltaLinesHTML(latest, prev, 'previous');
+      compare += '<p class="sub" style="margin-top:12px"><strong>Since your first assessment ('+fmtNice(assessDateStr(first))+'):</strong></p>'+deltaLinesHTML(latest, first, 'first');
+    }else{
+      compare += '<p class="sub"><strong>Since your first assessment ('+fmtNice(assessDateStr(first))+'):</strong></p>'+deltaLinesHTML(latest, first, 'first');
+    }
+    compare += '<p class="muted">Points are each area\'s share of symptoms checked, out of 100.</p></div>';
+  }
+  wrap.innerHTML = banner +
+    '<div class="card"><h3>Your assessments</h3>'+items+'</div>' +
+    compare + retakePlannerHTML();
+  const saveBtn = $('retakeSave');
+  if(saveBtn) saveBtn.addEventListener('click', function(){
+    const v = $('retakeDate').value;
+    if(!v){ toast('Pick a date first.'); return; }
+    if(isDemoCheckins() && isDemoAssess()){ toast('Preview only. Exit the sample preview to plan a retake.'); return; }
+    state.prefs.retakeTarget = v;
+    persistPrefs();
+    toast('Retake planned.');
+    renderAssessments();
+  });
+}
+
+/* ===== SECTION D: report (build step d) ===== */
+function renderReport(){
+  const list = currentAssessments();
+  const wrap = $('reportWrap');
+  if(!list.length){
+    wrap.innerHTML = emptyStateHTML('assess', 'The progress report is built from your assessment results. Take the assessment first, then bring this page to your provider.');
+    return;
+  }
+  const latest = list[list.length-1];
+  const first = list[0];
+  const cs = currentCheckins();
+  const recent = cs.filter(function(c){ return c.d >= daysAgoStr(29); });
+  let domainLines = latest.tabs.map(function(t){
+    let delta = '';
+    if(list.length >= 2){
+      const old = first.tabs.find(function(o){ return o.id === t.id; });
+      if(old){
+        const diff = t.pct - old.pct;
+        if(diff === 0) delta = ' (unchanged since the first assessment)';
+        else delta = ' ('+(diff<0?'down ':'up ')+Math.abs(diff)+' since the first assessment)';
+      }
+    }
+    return '<div class="report-line">'+esc(andify(t.label))+': '+t.pct+delta+'</div>';
+  }).join('');
+  let checkinBlock;
+  if(recent.length){
+    const avgs = METRICS.map(function(m){
+      const vals = recent.filter(function(c){ return typeof c[m.k]==='number'; }).map(function(c){ return c[m.k]; });
+      return m.label+' '+(vals.length ? r1(avgOf(vals)) : 'n/a');
+    }).join(', ');
+    checkinBlock = '<div class="report-line">'+recent.length+' day'+(recent.length===1?'':'s')+' logged in the last 30.</div>'+
+      '<div class="report-line">Averages (1 to 5): '+avgs+'.</div>';
+  }else{
+    checkinBlock = '<div class="report-line">No daily check-ins logged in the last 30 days.</div>';
+  }
+  const symptomLines = latest.top3.map(function(t){
+    const arr = (latest.checkedSymptoms && latest.checkedSymptoms[t.id]) || [];
+    return '<div class="report-line">'+esc(t.name)+': checked '+arr.length+' symptom'+(arr.length===1?'':'s')+'</div>';
+  }).join('');
+  const top3Lines = latest.top3.map(function(t,i){
+    return '<div class="report-line">'+(i+1)+'. '+esc(t.name)+' ('+t.pct+'%)</div>';
+  }).join('');
+  const name = latest.firstName ? esc(latest.firstName) : '';
+  wrap.innerHTML =
+    '<div class="save-row no-print" style="margin:0 0 14px"><button class="btn cta" id="printBtn">Print this report</button>'+
+    '<span class="save-hint">Prints as a clean one page summary.</span></div>'+
+    '<div class="report-sheet">'+
+      '<h2>Root Cause Unlocked &middot; Progress Report</h2>'+
+      '<div class="report-meta">'+(name ? 'Prepared for '+name+' &middot; ' : '')+fmtFull(new Date())+'</div>'+
+      '<h4>Latest assessment ('+fmtFull(assessDate(latest))+')</h4>'+top3Lines+
+      '<h4>All 8 areas (share of symptoms checked, out of 100)</h4>'+domainLines+
+      '<h4>Daily check-ins, last 30 days</h4>'+checkinBlock+
+      '<h4>Symptoms checked in the top areas</h4>'+symptomLines+
+      '<h4>Questions you might ask</h4>'+
+      '<div class="report-line">&bull; Which of these areas is worth investigating first?</div>'+
+      '<div class="report-line">&bull; Are there lab tests that could clarify my top areas?</div>'+
+      '<div class="report-line">&bull; What should I track between now and my next visit?</div>'+
+      '<div class="report-line">&bull; When should we reassess?</div>'+
+      '<div class="report-disclaimer">This is an educational self-report summary, not a diagnosis.</div>'+
+    '</div>';
+  $('printBtn').addEventListener('click', function(){ window.print(); });
+}
+
+/* ===== SECTION E: share card (build step e) ===== */
+function drawShareCard(canvas, latest){
+  const ctx = canvas.getContext('2d');
+  const S = 1080;
+  const g = ctx.createLinearGradient(0, 0, S, S);
+  g.addColorStop(0, '#3A66A4'); g.addColorStop(0.6, '#5987C5'); g.addColorStop(1, '#7FA3D6');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.beginPath(); ctx.arc(S-120, 140, 220, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(90, S-100, 170, 0, Math.PI*2); ctx.fill();
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#c0e0ff';
+  ctx.font = '700 44px Arial';
+  ctx.fillText('R O O T   C A U S E   U N L O C K E D', S/2, 150);
+  ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(S/2-90, 195); ctx.lineTo(S/2+90, 195); ctx.stroke();
+  ctx.fillStyle = '#b8d8f8';
+  ctx.font = '400 46px Arial';
+  ctx.fillText('My #1 area to explore:', S/2, 400);
+  const topTab = latest.tabs.reduce(function(best, t){ return t.pct > best.pct ? t : best; }, latest.tabs[0]);
+  ctx.fillStyle = '#ffffff';
+  let size = 92;
+  ctx.font = '700 '+size+'px Georgia';
+  while(ctx.measureText(topTab.label).width > S-160 && size > 48){ size -= 4; ctx.font = '700 '+size+'px Georgia'; }
+  ctx.fillText(topTab.label, S/2, 520);
+  const n = latest.conditions.filter(function(c){ return c.pct >= 40; }).length;
+  ctx.fillStyle = 'rgba(255,255,255,0.14)';
+  const pillW = 560, pillH = 96, pillY = 640;
+  ctx.beginPath();
+  ctx.moveTo(S/2-pillW/2+48, pillY); ctx.lineTo(S/2+pillW/2-48, pillY);
+  ctx.arc(S/2+pillW/2-48, pillY+48, 48, -Math.PI/2, Math.PI/2);
+  ctx.lineTo(S/2-pillW/2+48, pillY+pillH);
+  ctx.arc(S/2-pillW/2+48, pillY+48, 48, Math.PI/2, -Math.PI/2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 48px Arial';
+  ctx.fillText(n + ' of ' + latest.conditions.length + ' patterns flagged', S/2, pillY + 63);
+  ctx.fillStyle = '#a0ccf0';
+  ctx.font = '400 38px Arial';
+  ctx.fillText('Where does your health story start?', S/2, 850);
+  ctx.fillStyle = '#c0e0ff';
+  ctx.font = '700 40px Arial';
+  ctx.fillText('rootcauseunlocked.com', S/2, 980);
+}
+function renderShare(){
+  const list = currentAssessments();
+  const wrap = $('shareWrap');
+  if(!list.length){
+    wrap.innerHTML = emptyStateHTML('assess', 'Your share card is built from your latest assessment. Take the assessment first, then come back for your card.');
+    return;
+  }
+  const latest = list[list.length-1];
+  wrap.innerHTML = '<div class="card"><h3>Your share card</h3>'+
+    '<p class="sub">A square image of your top area to explore. No percentages, no condition names, just the area and your pattern count.</p>'+
+    '<div class="share-preview"><canvas id="shareCanvas" width="1080" height="1080"></canvas></div>'+
+    '<div class="save-row" style="justify-content:center"><button class="btn cta" id="downloadCardBtn">Download image</button></div></div>';
+  drawShareCard($('shareCanvas'), latest);
+  $('downloadCardBtn').addEventListener('click', function(){
+    try{
+      const url = $('shareCanvas').toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url; a.download = 'root-cause-unlocked-card.png';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      toast('Card downloaded.');
+    }catch(e){ toast('Could not build the image in this browser.'); }
+  });
+}
+
+/* ===== SECTION F: demo mode wiring + empty states (build step f) ===== */
+function emptyStateHTML(kind, msg){
+  const primary = kind === 'assess'
+    ? '<a class="btn cta" href="/quiz">Take the assessment first</a>'
+    : '<button class="btn cta" data-act="go-today">Go to Today</button>';
+  return '<div class="empty-card"><p>'+msg+'</p>'+
+    '<div class="empty-btns">'+primary+
+    '<button class="btn ghost" data-act="load-sample">Load sample preview</button></div></div>';
+}
+function loadSample(){
+  demoMode = true;
+  renderAll();
+  toast('Sample preview loaded. Nothing here is saved.');
+}
+function exitSample(){
+  demoMode = false;
+  renderAll();
+}
+function renderDemoBanner(){
+  const wrap = $('demoBannerWrap');
+  wrap.innerHTML = demoMode
+    ? '<div class="demo-banner"><span>Sample preview. Nothing here is saved.</span><button data-act="exit-sample">Exit preview</button></div>'
+    : '';
+}
+document.addEventListener('click', function(ev){
+  const el = ev.target.closest('[data-act]');
+  if(!el) return;
+  const act = el.dataset.act;
+  if(act === 'load-sample') loadSample();
+  else if(act === 'exit-sample') exitSample();
+  else if(act === 'go-today') switchTab('today');
+});
+
+/* ---------------- tabs + render-all + init ---------------- */
+function switchTab(name){
+  document.querySelectorAll('#tabNav .tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===name); });
+  document.querySelectorAll('section.tab').forEach(function(s){ s.classList.toggle('active', s.id==='tab-'+name); });
+}
+function renderAll(){
+  renderDemoBanner();
+  renderToday();
+  renderStreak();
+  renderTrends();
+  renderAssessments();
+  renderReport();
+  renderShare();
+}
+document.addEventListener('DOMContentLoaded', function(){
+  $('tabNav').addEventListener('click', function(ev){
+    const b = ev.target.closest('.tab-btn'); if(!b) return; switchTab(b.dataset.tab);
+  });
+  loadState();
+  buildScales();
+  /* deep links: ?demo=1 opens the sample preview, #tabname opens a tab */
+  if(/[?&]demo=1/.test(location.search)) demoMode = true;
+  renderAll();
+  var h = (location.hash || '').replace('#','');
+  if(['today','trends','assess','report','share'].indexOf(h) >= 0) switchTab(h);
+});
+</script>
+</body>
+</html>

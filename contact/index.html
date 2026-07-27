@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact · Root Cause Unlocked</title>
+<meta name="description" content="Reach Root Health NC by phone, fax, or email, or book a free Root Discovery Session with Adam Seay, D.C. in Garner, North Carolina.">
+<meta property="og:title" content="Contact · Root Cause Unlocked">
+<meta property="og:description" content="Reach Root Health NC, or book a free Root Discovery Session.">
+<meta property="og:image" content="/assets/logo-lockup.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="/assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="/" aria-label="Root Cause Unlocked home">
+      <img src="/assets/logo-header.png" alt="Root Cause Unlocked" width="560" height="330">
+    </a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+    <nav class="nav">
+      <a href="/programs">Programs</a>
+      <a href="/discovery">Discovery</a>
+      <a href="/about">About</a>
+      <a class="btn" href="/quiz">Take the assessment</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="label">Contact</p>
+    <h1>Reach Root Health NC</h1>
+    <p class="lead">Call, fax, or email the practice directly, or book a free Root Discovery
+    Session to talk through your situation.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Visit</h3>
+        <p>Seay Wellness &middot; Root Health NC<br>
+        Adam Seay, D.C., licensed chiropractor in North Carolina<br>
+        503 US-70 East, Suite L<br>
+        Garner, NC 27529</p>
+      </div>
+      <div class="card">
+        <h3>Reach us</h3>
+        <p>Phone: <a href="tel:+19196620520">919-662-0520</a><br>
+        Fax: 919-662-0522<br>
+        Email: <a href="mailto:info@seaywellness.com">info@seaywellness.com</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap center narrow">
+    <h2>Book a Root Discovery Session</h2>
+    <p class="lead">No cost, about twenty minutes. A straight conversation about your symptom
+    pattern and what would actually be worth investigating.</p>
+    <div class="btn-row" style="margin-top:26px">
+      <a class="btn btn-lg" href="https://seaywellness.janeapp.com/" target="_blank" rel="noopener">Book your session</a>
+      <a class="btn btn-ghost btn-lg" href="/discovery">Learn about the Discovery Session</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <img class="footer-logo-img" src="/assets/logo-footer.png" alt="Root Cause Unlocked" width="760" height="448">
+    <div class="footer-grid">
+      <div>
+        <p>Educational resources for people whose symptoms have outlasted their explanations.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="/quiz">Free assessment</a></li>
+          <li><a href="/programs">Programs</a></li>
+          <li><a href="/discovery">Discovery Session</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Programs</h4>
+        <ul class="footer-links">
+          <li><a href="/unlock-your-hashimotos">Hashimoto's</a></li>
+          <li><a href="/unlock-your-gut">Gut</a></li>
+          <li><a href="/unlock-your-lyme">Lyme</a></li>
+          <li><a href="/unlock-your-mold">Mold Toxicity</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul class="footer-links">
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Use</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p><strong>Medical disclaimer.</strong> The content on this site is for educational purposes only
+      and is not medical advice, diagnosis, or treatment. It does not create a doctor and patient
+      relationship. Always seek the advice of your physician or other qualified health provider with any
+      questions about a medical condition. Never disregard professional medical advice or delay seeking
+      it because of something you read here. Do not start, stop, or change any medication without the
+      prescribing clinician.</p>
+      <p>Root Cause Unlocked is an educational project of Root Health NC. &copy; 2026 All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  var t = document.querySelector('.nav-toggle'), n = document.querySelector('.nav');
+  t.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    t.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+</script>
+
+</body>
+</html>
