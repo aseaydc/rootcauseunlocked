@@ -701,11 +701,16 @@ function generateResults() {
   document.getElementById('email-gate').style.display = 'flex';
 }
 
-// ---- Relay lead capture. Fill these in after deploying Relay and provisioning
-// the Root Health tenant (see Relay/RUNBOOK-roothealth.md). Until then the quiz
-// still works end to end; the lead POST just no-ops and never blocks results. ----
-const RELAY_INTAKE_URL = 'https://YOUR-RELAY-DEPLOYMENT/api/intake';
-const RELAY_INTAKE_KEY = 'PASTE_ROOT_HEALTH_INTAKE_KEY';
+// ---- Relay lead capture. LIVE as of 2026-07-27. Relay's intake endpoint runs
+// as a Supabase Edge Function (project relay-rcu), not on Vercel. The lead POST
+// is fire-and-forget and never blocks results: if it fails, the visitor still
+// sees their assessment.
+// The intake_key below is PUBLIC on purpose, the same posture as a Formspree
+// form id. It can only create a consented lead and enroll it for this one
+// tenant. It can never read, list, or send anything. Do NOT replace it with a
+// tenant api_key, which is secret and must never reach a browser. ----
+const RELAY_INTAKE_URL = 'https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/intake';
+const RELAY_INTAKE_KEY = '97TfHjb8duWiZayVd6dzVnrt';
 const RELAY_PROGRAM = 'comprehensive'; // umbrella entry, enrolls on trigger quiz_completed:comprehensive
 const BOOKING_URL = 'https://seaywellness.janeapp.com/'; // live Jane scheduler, confirmed working
 const DISCOVERY_URL = 'https://rootcauseunlocked.com/discovery';
