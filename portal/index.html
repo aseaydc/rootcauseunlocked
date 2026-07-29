@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Provider Portal · Root Cause Unlocked</title>
+<meta name="description" content="Sign in to see your practice's Root Cause Unlocked leads.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/assets/favicon.png">
+<style>
+  :root {
+    --primary: #3A66A4;
+    --primary-mid: #5987C5;
+    --cta: #0E0E10;
+    --warm-white: #F7F5F0;
+    --text-dark: #0E0E10;
+    --border: #E2DFD7;
+    --muted: #5D5D57;
+    --white: #FFFFFF;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--warm-white);
+    color: var(--text-dark);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  a { color: var(--primary); }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: -.01em;
+  }
+  .brand .mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .brand small {
+    display: block;
+    font-weight: 500;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* ---------- logged out ---------- */
+  .auth-card {
+    max-width: 420px;
+    margin: 60px auto 0;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 30px;
+    text-align: center;
+  }
+  .auth-card h1 {
+    font-size: 1.4rem;
+    margin: 0 0 10px;
+    letter-spacing: -.01em;
+  }
+  .auth-card p {
+    color: var(--muted);
+    font-size: .94rem;
+    margin: 0 0 22px;
+  }
+  .field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  input[type="email"] {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: .96rem;
+    font-family: inherit;
+    color: var(--text-dark);
+    background: var(--warm-white);
+  }
+  input[type="email"]:focus {
+    outline: 2px solid var(--primary-mid);
+    outline-offset: 1px;
+  }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .btn-primary {
+    width: 100%;
+    padding: 13px 16px;
+    border: none;
+    border-radius: 10px;
+    background: var(--cta);
+    color: var(--white);
+    font-size: .96rem;
+    font-weight: 600;
+  }
+  .btn-primary:disabled {
+    opacity: .55;
+    cursor: default;
+  }
+  .btn-ghost {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dark);
+    font-size: .84rem;
+    font-weight: 600;
+  }
+  .status-line {
+    margin-top: 16px;
+    font-size: .88rem;
+  }
+  .status-line.ok { color: var(--primary); }
+  .status-line.err { color: #B3261E; }
+
+  /* ---------- logged in ---------- */
+  .header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .header-row h1 {
+    font-size: 1.55rem;
+    margin: 0 0 4px;
+    letter-spacing: -.01em;
+  }
+  .header-row .who {
+    color: var(--muted);
+    font-size: .88rem;
+    margin: 0;
+  }
+  .privacy-note {
+    font-size: .82rem;
+    color: var(--muted);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 18px 0 28px;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin: 26px 0;
+  }
+  .tile {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+  }
+  .tile .num {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .tile .lbl {
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .program-breakdown {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 30px;
+  }
+  .program-breakdown h2 {
+    font-size: .9rem;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+  }
+  .program-rows {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .program-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    font-size: .84rem;
+  }
+  .program-chip strong { color: var(--primary); }
+
+  .leads-section h2 {
+    font-size: 1.1rem;
+    margin: 0 0 14px;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--white);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+    min-width: 640px;
+  }
+  thead th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  .lead-name { font-weight: 600; }
+  .lead-email { color: var(--muted); font-size: .82rem; }
+  .score-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    font-size: .78rem;
+    font-weight: 600;
+  }
+
+  /* ---------- shared states ---------- */
+  .state-card {
+    max-width: 480px;
+    margin: 60px auto;
+    text-align: center;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 30px;
+  }
+  .state-card h2 {
+    font-size: 1.15rem;
+    margin: 0 0 10px;
+  }
+  .state-card p {
+    color: var(--muted);
+    font-size: .92rem;
+    margin: 0;
+  }
+  .spinner {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    margin: 0 auto 16px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 520px) {
+    main { padding: 24px 14px 60px; }
+    .auth-card { margin-top: 30px; padding: 28px 20px; }
+    thead th, tbody td { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="mark">R</span>
+    <span>
+      Root Cause Unlocked
+      <small>Provider Portal</small>
+    </span>
+  </div>
+  <button id="signOutBtn" class="btn-ghost hidden" type="button">Sign out</button>
+</div>
+
+<main>
+
+  <!-- Loading (initial session check) -->
+  <div id="viewLoading" class="state-card">
+    <div class="spinner"></div>
+    <h2>Loading</h2>
+    <p>Checking your session.</p>
+  </div>
+
+  <!-- Logged out: email form -->
+  <div id="viewLoggedOut" class="auth-card hidden">
+    <h1>Sign in to your portal</h1>
+    <p>Enter the email your practice uses with Root Cause Unlocked. We will send you a one-time login link, no password needed.</p>
+    <form id="loginForm" class="field-row">
+      <input id="emailInput" type="email" name="email" placeholder="you@yourpractice.com" autocomplete="email" required>
+      <button id="sendLinkBtn" class="btn-primary" type="submit">Send me a login link</button>
+    </form>
+    <div id="loginStatus" class="status-line hidden"></div>
+  </div>
+
+  <!-- Loading leads after sign-in -->
+  <div id="viewLeadsLoading" class="state-card hidden">
+    <div class="spinner"></div>
+    <h2>Loading your leads</h2>
+    <p>One moment.</p>
+  </div>
+
+  <!-- Not linked to a practice (403) -->
+  <div id="viewNotLinked" class="state-card hidden">
+    <h2>Your login is not linked to a practice yet</h2>
+    <p>We found your login, but it is not connected to a practice account yet. Contact support and we will get you set up.</p>
+  </div>
+
+  <!-- Auth / server error -->
+  <div id="viewError" class="state-card hidden">
+    <h2>Something went wrong</h2>
+    <p id="errorMessage">We could not load your leads just now. Try refreshing the page in a moment.</p>
+  </div>
+
+  <!-- Logged in: dashboard -->
+  <div id="viewDashboard" class="hidden">
+    <div class="header-row">
+      <div>
+        <h1>Your leads</h1>
+        <p class="who" id="whoLine"></p>
+      </div>
+    </div>
+    <div class="privacy-note">This dashboard shows real patient contact information collected through your Root Cause Unlocked funnel. Treat it accordingly.</div>
+
+    <div class="tiles">
+      <div class="tile"><div class="num" id="tileTotal">0</div><div class="lbl">Total leads</div></div>
+      <div class="tile"><div class="num" id="tile7">0</div><div class="lbl">Last 7 days</div></div>
+      <div class="tile"><div class="num" id="tile30">0</div><div class="lbl">Last 30 days</div></div>
+    </div>
+
+    <div class="program-breakdown">
+      <h2>By program</h2>
+      <div class="program-rows" id="programRows"></div>
+    </div>
+
+    <div class="leads-section">
+      <h2>Recent leads</h2>
+
+      <div id="noLeadsYet" class="state-card hidden" style="margin: 0;">
+        <h2>No leads yet</h2>
+        <p>Once someone completes your assessment, they will show up here.</p>
+      </div>
+
+      <div id="leadsTableWrap" class="table-wrap hidden">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Top condition</th>
+              <th>Score</th>
+              <th>Program</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+  // Supabase project for Root Cause Unlocked's lead funnel (relay schema).
+  // The anon key below is the PUBLIC anon key, safe in client code by
+  // design (it can only do what Supabase Auth and PostgREST's default-deny
+  // grants allow, and relay.* has zero grants for it, see schema.sql). It
+  // is never the service role key, and it never touches relay.* directly:
+  // every lead read goes through the `leads` edge function, which uses the
+  // service role internally only after verifying this user's own session.
+  const SUPABASE_URL = 'https://ckxinvzkaxxqllzjmspj.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNreGludnprYXh4cWxsemptc3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxNjQ0ODIsImV4cCI6MjEwMDc0MDQ4Mn0.YXeKaIUbfhvt8CPe1NXpFcFDlSlmJooGSSYXLtPhAYA';
+  const LEADS_FN_URL = SUPABASE_URL + '/functions/v1/leads';
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const views = {
+    loading: document.getElementById('viewLoading'),
+    loggedOut: document.getElementById('viewLoggedOut'),
+    leadsLoading: document.getElementById('viewLeadsLoading'),
+    notLinked: document.getElementById('viewNotLinked'),
+    error: document.getElementById('viewError'),
+    dashboard: document.getElementById('viewDashboard'),
+  };
+  const signOutBtn = document.getElementById('signOutBtn');
+
+  function showView(name) {
+    Object.entries(views).forEach(function (entry) {
+      var key = entry[0], el = entry[1];
+      el.classList.toggle('hidden', key !== name);
+    });
+    signOutBtn.classList.toggle('hidden', name !== 'dashboard' && name !== 'notLinked' && name !== 'error');
+  }
+
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function programLabel(key) {
+    var map = { comprehensive: 'Comprehensive', msk: 'MSK', glp1: 'GLP-1', unknown: 'Unspecified' };
+    return map[key] || key;
+  }
+
+  async function loadLeads(accessToken) {
+    showView('leadsLoading');
+    let res;
+    try {
+      res = await fetch(LEADS_FN_URL + '?limit=100', {
+        headers: { Authorization: 'Bearer ' + accessToken },
+      });
+    } catch (networkErr) {
+      document.getElementById('errorMessage').textContent = 'We could not reach the server. Check your connection and refresh.';
+      showView('error');
+      return;
+    }
+
+    let body = null;
+    try { body = await res.json(); } catch (e) { /* fall through */ }
+
+    if (res.status === 403) {
+      showView('notLinked');
+      return;
+    }
+    if (res.status === 401) {
+      document.getElementById('errorMessage').textContent = 'Your session has expired. Please sign in again.';
+      showView('error');
+      await supabase.auth.signOut();
+      return;
+    }
+    if (!res.ok || !body || body.ok !== true) {
+      document.getElementById('errorMessage').textContent = (body && body.message) || 'We could not load your leads just now. Try refreshing the page in a moment.';
+      showView('error');
+      return;
+    }
+
+    renderDashboard(body);
+  }
+
+  function renderDashboard(data) {
+    const summary = data.summary || {};
+    document.getElementById('tileTotal').textContent = summary.total || 0;
+    document.getElementById('tile7').textContent = summary.last_7_days || 0;
+    document.getElementById('tile30').textContent = summary.last_30_days || 0;
+
+    const programRows = document.getElementById('programRows');
+    const byProgram = summary.by_program || {};
+    const programKeys = Object.keys(byProgram);
+    if (programKeys.length === 0) {
+      programRows.innerHTML = '<span style="color:var(--muted); font-size:.85rem;">No program data yet.</span>';
+    } else {
+      programRows.innerHTML = programKeys
+        .sort(function (a, b) { return byProgram[b] - byProgram[a]; })
+        .map(function (key) {
+          return '<span class="program-chip">' + escapeHtml(programLabel(key)) + ' <strong>' + escapeHtml(String(byProgram[key])) + '</strong></span>';
+        })
+        .join('');
+    }
+
+    const leads = data.leads || [];
+    const tbody = document.getElementById('leadsTbody');
+    const tableWrap = document.getElementById('leadsTableWrap');
+    const noLeadsYet = document.getElementById('noLeadsYet');
+
+    if (leads.length === 0) {
+      tableWrap.classList.add('hidden');
+      noLeadsYet.classList.remove('hidden');
+    } else {
+      noLeadsYet.classList.add('hidden');
+      tableWrap.classList.remove('hidden');
+      tbody.innerHTML = leads.map(function (lead) {
+        const name = lead.name ? escapeHtml(lead.name) : '<span style="color:var(--muted)">Unnamed</span>';
+        const condition = lead.top_condition ? escapeHtml(lead.top_condition) : '<span style="color:var(--muted)">None recorded</span>';
+        const score = (lead.score !== null && lead.score !== undefined)
+          ? '<span class="score-badge">' + escapeHtml(String(lead.score)) + (lead.tier ? ' &middot; ' + escapeHtml(String(lead.tier)) : '') + '</span>'
+          : '<span style="color:var(--muted)">Not scored</span>';
+        const program = lead.program ? escapeHtml(programLabel(lead.program)) : '<span style="color:var(--muted)">Unspecified</span>';
+        return '<tr>' +
+          '<td><div class="lead-name">' + name + '</div><div class="lead-email">' + escapeHtml(lead.email) + '</div></td>' +
+          '<td>' + condition + '</td>' +
+          '<td>' + score + '</td>' +
+          '<td>' + program + '</td>' +
+          '<td>' + formatDate(lead.created_at) + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    document.getElementById('whoLine').textContent = 'Showing your practice\'s recent activity.';
+    showView('dashboard');
+  }
+
+  async function handleSession(session) {
+    if (!session) {
+      showView('loggedOut');
+      return;
+    }
+    await loadLeads(session.access_token);
+  }
+
+  // Login form.
+  const loginForm = document.getElementById('loginForm');
+  const emailInput = document.getElementById('emailInput');
+  const sendLinkBtn = document.getElementById('sendLinkBtn');
+  const loginStatus = document.getElementById('loginStatus');
+
+  loginForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    sendLinkBtn.disabled = true;
+    sendLinkBtn.textContent = 'Sending...';
+    loginStatus.classList.add('hidden');
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname },
+    });
+
+    sendLinkBtn.disabled = false;
+    sendLinkBtn.textContent = 'Send me a login link';
+
+    loginStatus.classList.remove('hidden');
+    if (error) {
+      loginStatus.classList.remove('ok');
+      loginStatus.classList.add('err');
+      loginStatus.textContent = 'We could not send that link. Double check the email and try again.';
+    } else {
+      loginStatus.classList.remove('err');
+      loginStatus.classList.add('ok');
+      loginStatus.textContent = 'Check your email for a login link.';
+    }
+  });
+
+  signOutBtn.addEventListener('click', async function () {
+    await supabase.auth.signOut();
+    showView('loggedOut');
+  });
+
+  // Clean a magic-link redirect hash out of the address bar once Supabase
+  // has parsed it, purely cosmetic (session already lives in supabase-js's
+  // own storage by the time onAuthStateChange fires below).
+  supabase.auth.onAuthStateChange(function (event, session) {
+    if (window.location.hash && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    if (event === 'SIGNED_OUT') {
+      showView('loggedOut');
+      return;
+    }
+    if (session) {
+      handleSession(session);
+    }
+  });
+
+  // Initial check, in case onAuthStateChange's INITIAL_SESSION event is not
+  // relied on alone across supabase-js versions.
+  supabase.auth.getSession().then(function (result) {
+    handleSession(result.data.session);
+  });
+</script>
+
+</body>
+</html>
