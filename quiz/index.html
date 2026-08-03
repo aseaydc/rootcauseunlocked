@@ -160,6 +160,8 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);
 .result-name{font-family:Arial,sans-serif;font-size:0.82rem;font-weight:600;color:var(--text-dark);}
 .result-name.top{color:var(--cta);font-weight:800;}
 .result-count{font-family:Arial,sans-serif;font-size:0.72rem;color:var(--text-light);}
+.top3-note{font-family:Arial,sans-serif;font-size:0.8rem;font-weight:400;color:var(--text-light);line-height:1.55;margin:2px 0 6px;}
+.result-note{font-family:Arial,sans-serif;font-size:0.76rem;color:var(--text-light);line-height:1.5;margin:3px 0 1px;}
 .result-pct{font-family:Arial,sans-serif;font-size:0.82rem;font-weight:700;}
 .result-track{background:var(--primary-pale);border-radius:5px;height:9px;overflow:hidden;}
 .result-fill{height:100%;border-radius:5px;transition:width 1.1s cubic-bezier(.4,0,.2,1);}
@@ -558,6 +560,9 @@ const CONDITIONS = [
   { id:'mcs', tab:5, name:'Multiple Chemical Sensitivity', url:'https://rootcauseunlocked.com/multiple-chemical-sensitivity',
     symptoms:['Reactions to perfumes, cleaning products, or chemicals','Fatigue after chemical or fragrance exposure','Headaches in public spaces or newly built or renovated buildings','Brain fog following chemical exposure','Nausea from scents or strong smells','Worsening symptoms in new buildings (off-gassing)','Skin reactions to household or personal care products','Widespread sensitivity that has worsened over time'] },
 
+  { id:'mold', tab:5, name:'Mold / Mycotoxin Illness', url:'https://rootcauseunlocked.com/unlock-your-mold',
+    symptoms:['Symptoms flare in damp, musty, or water-damaged buildings','Brain fog or word-finding difficulty','Fatigue that rest does not fix','Chronic sinus congestion or post-nasal drip','Recurring headaches or head pressure','Watery, itchy, or burning eyes','New sensitivity to chemicals, fragrances, or foods','Skin tingling, crawling, or unusual sensations'] },
+
   { id:'oxalate', tab:5, name:'Oxalate Toxicity', url:'https://rootcauseunlocked.com/oxalate-toxicity',
     symptoms:['Burning with urination without infection','History of kidney stones','Joint pain or gritty deposits in joints','Vulvar pain or vulvodynia','History of gut dysbiosis or leaky gut','Persistent fatigue','Brain fog or cognitive cloudiness','High-oxalate diet history (spinach, almonds, beets, dark chocolate)'] },
 
@@ -694,6 +699,15 @@ function generateResults() {
     document.getElementById('fname').scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
   }
+  // A blank assessment scores 0 on everything and still names a "top 3", so
+  // require at least one checked symptom before the gate opens. Also stops
+  // score-0 junk leads from reaching Relay.
+  if (!document.querySelector('[id^="chk-"]:checked')) {
+    const msg = document.getElementById('val-msg');
+    msg.style.display = 'block';
+    msg.textContent = 'Please check at least one symptom so your results reflect you. If nothing applies today, there is nothing to score yet.';
+    return;
+  }
   document.getElementById('val-msg').style.display = 'none';
   // Pre-fill gate first name if available
   document.getElementById('gate-fname').value = fname;
@@ -715,22 +729,141 @@ const RELAY_PROGRAM = 'comprehensive'; // umbrella entry, enrolls on trigger qui
 const BOOKING_URL = 'https://seaywellness.janeapp.com/'; // live Jane scheduler, confirmed working
 const DISCOVERY_URL = 'https://rootcauseunlocked.com/discovery';
 
-// ---- Program page routing for the results CTA. Only the ids below have a real
-// program page built on the site. Every other condition sends the visitor to
-// /discovery to book the free Root Discovery Session.
+// ---- Attribution capture (added 2026-07-30). UTM params and the external
+// referrer are read on first load, kept for the session, and attached to the
+// lead payload, so every lead records which platform and post produced it.
+// sessionStorage only, no cookies, no vendor. ----
+const RCU_ATTRIB_KEY = 'rcu_attrib';
+(function rcuCaptureAttribution() {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    const found = {};
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) {
+      const v = p.get(k);
+      if (v) found[k] = v.slice(0, 120);
+    });
+    if (document.referrer && document.referrer.indexOf(window.location.host) === -1) {
+      found.referrer = document.referrer.slice(0, 200);
+    }
+    if (Object.keys(found).length) sessionStorage.setItem(RCU_ATTRIB_KEY, JSON.stringify(found));
+  } catch (e) { /* attribution is optional */ }
+})();
+function rcuGetAttribution() {
+  try { return JSON.parse(sessionStorage.getItem(RCU_ATTRIB_KEY) || '{}'); } catch (e) { return {}; }
+}
+
+// ---- Program page routing for the results CTA, organized by the seven RCU
+// clusters (Adam, 2026-07-30): Gut/GI, Neurological, Environmental/Toxicity,
+// Infection, Metabolic, Energy/Mitochondrial, MSK. A condition maps to the
+// existing page that honestly serves its cluster; conditions with no honest
+// page today fall through to /discovery tagged with ?c=<condition id> so
+// demand per condition is countable. The full mapping doctrine, including the
+// rows held back on claims posture, lives in
+// "Root Health Ops/RCU-Condition-Program-Mapping.md".
 // HISTORY: each CONDITIONS entry still carries a legacy url: field pointing at a
 // per-condition slug (/ibs, /reflux-gerd, and so on). Those pages were never built
-// and all 54 of them returned 404, so nothing reads that field any more. Do not
-// wire it back up. Adding a real condition page later means adding one line here
-// and nothing else. ----
+// and all of them returned 404, so nothing reads that field any more. Do not
+// wire it back up. ----
 const PROGRAM_PAGE_BY_CONDITION = {
-  candida:    'https://rootcauseunlocked.com/unlock-your-candida',
-  leakygut:   'https://rootcauseunlocked.com/unlock-your-gut',
-  dysbiosis:  'https://rootcauseunlocked.com/unlock-your-gut',
-  sibo:       'https://rootcauseunlocked.com/unlock-your-gut',
-  lyme:       'https://rootcauseunlocked.com/unlock-your-lyme',
-  hashimotos: 'https://rootcauseunlocked.com/unlock-your-hashimotos',
-  neuropathy: 'https://rootcauseunlocked.com/unlock-your-neuropathy'
+  // Gut/GI cluster
+  gerd:           'https://rootcauseunlocked.com/unlock-your-gut',
+  ibs:            'https://rootcauseunlocked.com/unlock-your-gut',
+  crohns:         'https://rootcauseunlocked.com/unlock-your-gut', // educational routing only, no paid card
+  uc:             'https://rootcauseunlocked.com/unlock-your-gut', // educational routing only, no paid card
+  nafld:          'https://rootcauseunlocked.com/unlock-your-gut',
+  leakygut:       'https://rootcauseunlocked.com/unlock-your-gut',
+  sibo:           'https://rootcauseunlocked.com/unlock-your-gut',
+  dysbiosis:      'https://rootcauseunlocked.com/unlock-your-gut',
+  gastritis:      'https://rootcauseunlocked.com/unlock-your-gut',
+  hpylori:        'https://rootcauseunlocked.com/unlock-your-gut',
+  diverticulitis: 'https://rootcauseunlocked.com/unlock-your-gut',
+  parasitic:      'https://rootcauseunlocked.com/unlock-your-gut',
+  gallbladder:    'https://rootcauseunlocked.com/unlock-your-gut',
+  psoriasis:      'https://rootcauseunlocked.com/unlock-your-gut', // skin-gut axis
+  eczema:         'https://rootcauseunlocked.com/unlock-your-gut', // skin-gut axis
+  allergies:      'https://rootcauseunlocked.com/unlock-your-gut', // histamine handling
+  // Infection cluster
+  candida:        'https://rootcauseunlocked.com/unlock-your-candida',
+  lyme:           'https://rootcauseunlocked.com/unlock-your-lyme',
+  // Environmental/Toxicity cluster
+  mold:           'https://rootcauseunlocked.com/unlock-your-mold',
+  mcas:           'https://rootcauseunlocked.com/unlock-your-mold',
+  mcs:            'https://rootcauseunlocked.com/unlock-your-mold',
+  // Metabolic cluster
+  hashimotos:     'https://rootcauseunlocked.com/unlock-your-hashimotos',
+  diabetes:       'https://rootcauseunlocked.com/unlock-your-glp1',
+  // Neurological cluster
+  neuropathy:     'https://rootcauseunlocked.com/unlock-your-neuropathy'
+};
+// MSK cluster: osteoarthritis goes deeper into the MSK pain assessment at /msk
+// instead of a program page, so it carries its own button label.
+const ASSESSMENT_PAGE_BY_CONDITION = {
+  osteoarthritis: { url: 'https://rootcauseunlocked.com/msk', label: 'Go Deeper: Take the MSK Pain Assessment' }
+};
+
+// ---- Condition explanations for the results catalog (added 2026-07-30).
+// One or two sentences per condition: what the pattern is and where a root
+// cause workup looks. Educational framing only: no treatment claims, no
+// statistics, and serious diagnoses defer to the person's medical team.
+// Rendered on the top 3 cards and under every row of the full results list.
+// CLINICAL REVIEW: Adam. Same copy snapshotted for markup in
+// "Root Health Ops/RCU-Condition-Explanations.md". ----
+const CONDITION_NOTES = {
+  gerd: 'Reflux happens when stomach contents move upward past a valve that should stay closed. Root cause work looks at stomach acid balance, food triggers, gut bacteria, and pressure from bloating rather than only suppressing acid.',
+  ibs: 'IBS is a pattern of cramping, bloating, and unpredictable bowel habits without visible damage on standard scopes. Functional evaluation looks for drivers like bacterial imbalance, food reactions, motility problems, and the gut-brain connection.',
+  crohns: "Crohn's is an inflammatory bowel disease that needs medical management. Root cause support works alongside your gastroenterologist, focusing on the microbiome, nutrient status, and the inflammation drivers that influence flares.",
+  uc: 'Ulcerative colitis is inflammatory bowel disease affecting the colon and needs medical management. Functional support runs alongside your specialist and focuses on microbiome balance, nutrient repletion, and identifying personal flare triggers.',
+  nafld: 'Fatty liver reflects how the body stores and processes energy, and it is strongly tied to blood sugar, insulin, and gut health. It is often improvable when the metabolic drivers behind it are addressed.',
+  leakygut: 'Intestinal permeability means the gut lining is letting through particles it should filter. It is linked to food reactions, inflammation, and immune activation, and a functional workup looks for what is irritating the barrier.',
+  sibo: 'SIBO means bacteria overgrowing in the small intestine, where they ferment food too early and cause bloating, gas, and irregular bowels. Breath testing and motility support are the usual starting points.',
+  dysbiosis: 'Dysbiosis is an imbalance in the gut microbiome: too few protective species, too many opportunistic ones. Stool testing maps what is actually living in your gut so support can be specific instead of guessed.',
+  gastritis: 'Gastritis is irritation of the stomach lining. Root cause evaluation looks for H. pylori, medication effects, alcohol, stress physiology, and bile flow rather than only coating the symptom.',
+  hpylori: 'H. pylori is a stomach bacterium that can drive gastritis, ulcers, and reflux-like symptoms. It is testable through stool or breath testing and is a common hidden driver of upper digestive complaints.',
+  diverticulitis: 'Diverticular disease involves small pouches in the colon wall that can inflame. Between episodes, root cause work focuses on fiber tolerance, the microbiome, and motility to support colon resilience.',
+  parasitic: 'Parasitic infections can drive digestive, skin, and energy symptoms and do not always show on a basic workup. Comprehensive stool testing is how this pattern gets confirmed or ruled out.',
+  gallbladder: 'The gallbladder concentrates bile for fat digestion. When bile flow is sluggish, fatty meals cause bloating, nausea, or right-sided discomfort. Evaluation looks at bile flow, fat digestion, and their gut connections.',
+  adhd: 'Attention and focus patterns have many contributors. A root cause lens looks at sleep quality, blood sugar stability, nutrient status, and gut health as factors that influence attention alongside standard care.',
+  brain: 'Brain fog and cognitive decline are signals worth investigating, not accepting. Functional evaluation looks at inflammation, blood sugar, sleep, nutrients, toxins, and gut health as modifiable contributors to how clearly you think.',
+  vertigo: 'Vertigo and balance symptoms can come from the inner ear, the vestibular system, circulation, or the nervous system. Pinning down which system is involved is the first step toward the right support.',
+  ms: 'Multiple sclerosis is a serious neurological condition that needs specialist care. Root cause support runs alongside your neurologist, focusing on modifiable factors like vitamin D status, gut health, and inflammation load.',
+  migraine: 'Migraines are a neurological pattern with identifiable personal triggers: hormones, histamine, blood sugar swings, sleep debt, and certain foods among them. Mapping your triggers is the core of root cause work here.',
+  insomnia: 'Poor sleep is both a symptom and a driver of nearly everything else. Evaluation looks at cortisol rhythm, blood sugar, breathing, and evening physiology rather than treating sleep as a willpower problem.',
+  anxdep: 'Mood symptoms are real and deserve real support, including professional mental health care. A root cause lens adds the physical side: thyroid, blood sugar, gut health, inflammation, and nutrients all influence how you feel.',
+  neuropathy: 'Neuropathy means the small nerves are irritated or under-supplied. Blood sugar, B vitamin status, circulation, and toxin exposure are common contributors, and identifying yours guides what recovery support looks like.',
+  alzheimers: 'Memory concerns deserve thorough medical evaluation. Alongside your medical team, root cause work focuses on the modifiable factors research connects to brain health: blood sugar, sleep, inflammation, and cardiovascular fitness.',
+  parkinsons: "Parkinson's is a neurological condition requiring specialist care. Supportive root cause work runs alongside it, looking at gut health, toxin history, and inflammation as areas research continues to explore.",
+  autoimmune: "Autoimmunity means the immune system has lost some tolerance for the body's own tissue. Root cause evaluation looks for what is provoking it: gut permeability, infections, toxins, and chronic stress physiology.",
+  ebv: 'Epstein-Barr virus lives dormant in most adults and can reactivate under stress, driving fatigue, sore throat, and swollen glands. Targeted labs can show whether reactivation is part of your picture.',
+  mcas: 'Mast cell activation means immune cells release histamine and other mediators too easily, causing flushing, hives, food reactions, and multi-system flares. Triggers like mold exposure and gut imbalance are commonly explored.',
+  longcovid: 'Long COVID is a real post-viral pattern of fatigue, brain fog, and exercise intolerance. Evaluation looks at mitochondrial function, immune activation, and circulation to find where support helps most.',
+  lyme: 'Lyme and other tick-borne infections can drive migrating joint pain, fatigue, and neurological symptoms long after the bite. Careful history and specialized testing separate this pattern from its look-alikes.',
+  allergies: 'Histamine intolerance means the body makes or clears histamine poorly, so reactions look allergic but standard allergy testing often comes back clean. Gut health and enzyme capacity are the usual places to look.',
+  adrenal: 'Your stress system sets energy, sleep, and resilience. When it is stuck in overdrive or depleted, mornings are heavy and evenings are wired. Cortisol rhythm testing shows the actual pattern.',
+  pcos: 'PCOS is a hormone and metabolism pattern, not just an ovary issue. Insulin resistance, inflammation, and androgen balance drive it, and all three are measurable and addressable.',
+  cholesterol: 'Cholesterol numbers are one part of cardiovascular risk. A root cause workup adds particle size, inflammation, blood sugar, and thyroid status to see the fuller picture behind the lipid panel.',
+  htn: 'Blood pressure is an output with many inputs: kidney function, insulin, minerals, sleep quality, stress physiology, and vessel health. Working with your physician, the goal is finding your inputs.',
+  pots: 'POTS is a dysautonomia pattern where standing sends heart rate climbing. Blood volume, circulation, and nervous system regulation are the usual evaluation targets alongside cardiology care.',
+  hashimotos: "Hashimoto's is autoimmune thyroid disease: the immune attack, not just the hormone level, is the story. Root cause work looks at what provokes the attack while your thyroid labs are optimized.",
+  lowtestosterone: 'Low testosterone in men is often downstream of sleep debt, insulin resistance, chronic stress, and nutrient gaps. Confirming the pattern with full hormone labs comes before deciding on support.',
+  diabetes: 'Type 2 diabetes is an insulin signaling problem years in the making, and it responds to addressing the drivers: muscle, meals, sleep, and stress. Medication and root cause work are partners, not rivals.',
+  heartdisease: 'Heart disease needs cardiology care first. Alongside it, root cause work addresses the drivers you can influence: inflammation, blood sugar, lipids, blood pressure, sleep, and fitness.',
+  eds: 'Ehlers-Danlos is a connective tissue difference that affects joints, skin, and often digestion and the nervous system. Support focuses on stability, pacing, and the commonly overlapping gut and autonomic symptoms.',
+  psoriasis: 'Psoriasis is immune-driven skin turnover, and research keeps connecting it to gut health and systemic inflammation. Skin is often where internal imbalance becomes visible.',
+  eczema: 'Eczema reflects a reactive immune system and a stressed skin barrier. Food reactions, gut imbalance, and histamine load are common internal contributors worth mapping before relying only on topicals.',
+  psa: 'Psoriatic arthritis and ankylosing spondylitis are inflammatory joint and spine conditions that need rheumatology care. Root cause support alongside it focuses on gut health and total inflammation load.',
+  arthritis: 'Inflammatory arthritis means the immune system is involved, not just wear and tear. Morning stiffness that lasts is the tell. Evaluation looks for what is feeding the inflammation.',
+  heavymetals: 'Metals like mercury and lead accumulate slowly from fillings, water, food, and occupational exposure, and can affect energy, mood, and nerves. Testing confirms whether a real body burden exists.',
+  mcs: 'Chemical sensitivity means reactions to exposures most people tolerate: fragrances, cleaners, new buildings. It often overlaps with mold illness and mast cell activation, and reducing total load is the starting point.',
+  oxalate: 'Oxalates are plant compounds that can accumulate when the gut bacteria that degrade them are missing, contributing to urinary burning, kidney stones, and gritty joint pain in susceptible people.',
+  mold: 'Mycotoxins from water-damaged buildings can drive fog, fatigue, sinus trouble, and multi-system symptoms in susceptible people. The signature clue is symptoms that track with specific buildings. Testing and exposure history confirm it.',
+  candida: 'Candida is a yeast that overgrows when the microbiome is disrupted, driving sugar cravings, fog, bloating, and recurrent yeast infections. Stool and organic acid testing show whether it is active.',
+  rheumatoid: 'Rheumatoid arthritis is autoimmune joint disease that needs rheumatology care. Root cause work runs alongside it, exploring gut health, infections, and the inflammation drivers linked to disease activity.',
+  osteoarthritis: 'Osteoarthritis is joint wear plus inflammation, and the inflammation part is modifiable. Load management, strength, weight, and metabolic health all change how joints feel and function.',
+  osteoporosis: 'Bone density reflects decades of hormones, minerals, protein, and loading. A root cause workup asks why bone is being lost: nutrition, hormones, gut absorption, or medications.',
+  fibromyalgia: 'Fibromyalgia is a real pain amplification pattern involving the nervous system, sleep, and energy production. Evaluation looks at sleep quality, mitochondrial function, and overlapping conditions like thyroid and mold illness.',
+  cfs: 'Chronic fatigue syndrome centers on post-exertional crashes and unrefreshing sleep. Root cause evaluation looks at mitochondria, infections, immune activation, and orthostatic issues to find your specific contributors.',
+  raynauds: "Raynaud's is vessel overreaction to cold and stress. It can stand alone or signal autoimmune activity, so evaluation checks both circulation and immune markers.",
+  kidney: 'Kidney function needs medical monitoring. Alongside your physician, root cause work focuses on the biggest modifiable inputs: blood pressure, blood sugar, hydration, and medication load.'
 };
 
 // ---- Tripwire ebook offer (Unlock Your series). Paste the real Stripe Payment
@@ -747,19 +880,27 @@ const STRIPE_LINKS = {
   hashimotos: 'https://buy.stripe.com/PLACEHOLDER_HASHIMOTOS',
   neuropathy: 'https://buy.stripe.com/PLACEHOLDER_NEUROPATHY'
 };
-// Maps CONDITIONS ids to their ebook. Conditions without an honest ebook match are
-// left out on purpose: their results show only the existing booking CTA. Note: the
-// current CONDITIONS array has no mold or mycotoxin condition and no standalone
-// hypothyroid condition, so the mold ebook has no mapping yet; if either condition
-// is ever added to the quiz, add its id here.
+// Maps CONDITIONS ids to their ebook, in lockstep with PROGRAM_PAGE_BY_CONDITION
+// (Adam, 2026-07-30): High-confidence cluster rows only. Claims-care rows
+// (Crohn's, UC) and mechanism-bridge rows (NAFLD, gallbladder, skin, histamine,
+// MCAS, MCS, diabetes) are left out on purpose: their results show the program
+// page and booking CTAs with no paid card. All cards stay suppressed anyway
+// until real Stripe Payment Links replace the placeholders above.
 const EBOOK_BY_CONDITION = {
-  candida:    { product: 'candida',    title: 'Unlock Your Candida' },
-  leakygut:   { product: 'gut',        title: 'Unlock Your Gut' },
-  dysbiosis:  { product: 'gut',        title: 'Unlock Your Gut' },
-  sibo:       { product: 'gut',        title: 'Unlock Your Gut' },
-  lyme:       { product: 'lyme',       title: 'Unlock Your Lyme' },
-  hashimotos: { product: 'hashimotos', title: "Unlock Your Hashimoto's" },
-  neuropathy: { product: 'neuropathy', title: 'Unlock Your Neuropathy' }
+  gerd:           { product: 'gut',        title: 'Unlock Your Gut' },
+  ibs:            { product: 'gut',        title: 'Unlock Your Gut' },
+  leakygut:       { product: 'gut',        title: 'Unlock Your Gut' },
+  dysbiosis:      { product: 'gut',        title: 'Unlock Your Gut' },
+  sibo:           { product: 'gut',        title: 'Unlock Your Gut' },
+  gastritis:      { product: 'gut',        title: 'Unlock Your Gut' },
+  hpylori:        { product: 'gut',        title: 'Unlock Your Gut' },
+  diverticulitis: { product: 'gut',        title: 'Unlock Your Gut' },
+  parasitic:      { product: 'gut',        title: 'Unlock Your Gut' },
+  candida:        { product: 'candida',    title: 'Unlock Your Candida' },
+  lyme:           { product: 'lyme',       title: 'Unlock Your Lyme' },
+  mold:           { product: 'mold',       title: 'Unlock Your Mold' },
+  hashimotos:     { product: 'hashimotos', title: "Unlock Your Hashimoto's" },
+  neuropathy:     { product: 'neuropathy', title: 'Unlock Your Neuropathy' }
 };
 // Per-ebook card copy: transformation first, then what they have been living with.
 const TRIPWIRE_COPY = {
@@ -810,10 +951,10 @@ function submitEmailGate() {
       intake_key: RELAY_INTAKE_KEY, email: em, name: fn, phone: phone || undefined,
       consent: true, sms_consent: smsConsent && !!phone, program: RELAY_PROGRAM, source: 'comprehensive_quiz',
       score: top.pct,
-      merge_fields: {
+      merge_fields: Object.assign({
         first_name: fn, top_condition: top.name, top_condition_id: top.id, top_score: top.pct,
         top3: scored.slice(0, 3).map(function (c) { return c.name; }).join(', '), concern: concern
-      }
+      }, rcuGetAttribution())
     })
   }).catch(function () {}).finally(function () {
     document.getElementById('email-gate').style.display = 'none';
@@ -853,16 +994,20 @@ function doShowResults() {
       <div class="top3-left">
         <div class="top3-rank">#${i + 1} Priority Area</div>
         <div class="top3-name">${c.name}</div>
+        ${CONDITION_NOTES[c.id] ? `<div class="top3-note">${CONDITION_NOTES[c.id]}</div>` : ''}
         <div class="top3-track"><div class="top3-fill" data-w="${c.pct}" style="width:0%"></div></div>
       </div>
       <div class="top3-pct">${c.pct}%</div>
     </div>`).join('');
 
-  // Single CTA for top-scoring condition
+  // Single CTA for top-scoring condition: deep-dive assessment first, then
+  // program page, then the discovery session tagged with the condition id so
+  // demand per condition is countable downstream.
   const top = scored[0];
+  const topAssessment = ASSESSMENT_PAGE_BY_CONDITION[top.id];
   const topProgramUrl = PROGRAM_PAGE_BY_CONDITION[top.id];
-  const topUrl = topProgramUrl || DISCOVERY_URL;
-  const topLabel = topProgramUrl ? `Learn More: ${top.name}` : 'Your Next Step: The Root Discovery Session';
+  const topUrl = topAssessment ? topAssessment.url : (topProgramUrl || DISCOVERY_URL + '?c=' + encodeURIComponent(top.id));
+  const topLabel = topAssessment ? topAssessment.label : (topProgramUrl ? `Learn More: ${top.name}` : 'Your Next Step: The Root Discovery Session');
   document.getElementById('program-btns').innerHTML = `<a href="${topUrl}" class="btn-program" target="_blank"><span class="bp-left">${topLabel}</span><span class="bp-arrow">&#8594;</span></a>`;
 
   // All bars
@@ -875,6 +1020,7 @@ function doShowResults() {
         <span class="result-pct" style="color:${color}">${c.pct}%</span>
       </div>
       <div class="result-count">${c.checked} of ${c.symptoms.length} symptoms</div>
+      ${CONDITION_NOTES[c.id] ? `<div class="result-note">${CONDITION_NOTES[c.id]}</div>` : ''}
       <div class="result-track"><div class="result-fill" data-w="${c.pct}" style="width:0%;background:${color}"></div></div>
     </div>`;
   }).join('');
@@ -1106,5 +1252,28 @@ rcuWireBooking();
     </div>
   </div>
 </div>
+<script>
+/* First-party pageview ping to Relay (added 2026-07-30). Create-only, same
+   public intake_key posture as lead capture. No cookies, no vendor. Sent as
+   text/plain so the request needs no CORS preflight. Skips localhost and
+   file:// so local work never lands in the table. */
+(function () {
+  try {
+    if (window.location.protocol.indexOf('http') !== 0) return;
+    if (/^(localhost|127\.|192\.168\.)/.test(window.location.hostname)) return;
+    fetch('https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({
+        intake_key: '97TfHjb8duWiZayVd6dzVnrt',
+        path: window.location.pathname.slice(0, 200),
+        search: window.location.search.slice(0, 300),
+        referrer: (document.referrer || '').slice(0, 300)
+      }),
+      keepalive: true
+    }).catch(function () {});
+  } catch (e) { /* tracking must never break the page */ }
+})();
+</script>
 </body>
 </html>
