@@ -285,5 +285,28 @@
   document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 </script>
 
+<script>
+/* First-party pageview ping to Relay (added 2026-07-30). Create-only, same
+   public intake_key posture as lead capture. No cookies, no vendor. Sent as
+   text/plain so the request needs no CORS preflight. Skips localhost and
+   file:// so local work never lands in the table. */
+(function () {
+  try {
+    if (window.location.protocol.indexOf('http') !== 0) return;
+    if (/^(localhost|127\.|192\.168\.)/.test(window.location.hostname)) return;
+    fetch('https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({
+        intake_key: '97TfHjb8duWiZayVd6dzVnrt',
+        path: window.location.pathname.slice(0, 200),
+        search: window.location.search.slice(0, 300),
+        referrer: (document.referrer || '').slice(0, 300)
+      }),
+      keepalive: true
+    }).catch(function () {});
+  } catch (e) { /* tracking must never break the page */ }
+})();
+</script>
 </body>
 </html>

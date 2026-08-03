@@ -41,6 +41,7 @@
     <p class="lead">A straight conversation about what your symptom pattern suggests, what would
     actually be worth investigating, and whether this practice is the right place for it. If it is
     not, you will hear that too.</p>
+    <p id="discovery-greeting" style="display:none;margin-top:18px;padding:12px 18px;background:rgba(127,127,127,0.12);border:1px solid rgba(127,127,127,0.3);border-radius:10px;font-weight:600;"></p>
     <div class="btn-row" style="margin-top:26px">
       <a class="btn btn-lg" href="https://seaywellness.janeapp.com/" target="_blank" rel="noopener">Book your session</a>
       <a class="btn btn-ghost btn-lg" href="/quiz">Take the assessment first</a>
@@ -48,6 +49,44 @@
     <p class="hero-note">Booking takes about a minute. Come with your history, not your paperwork.</p>
   </div>
 </section>
+
+<script>
+/* Personalized greeting for arrivals tagged by the assessment results CTA
+   (/discovery?c=<condition id>). The id list mirrors the quiz CONDITIONS array.
+   Unknown or missing ids leave the page exactly as it was. */
+(function () {
+  var NAMES = {
+    gerd: 'Reflux / GERD', ibs: 'IBS (Irritable Bowel Syndrome)', crohns: "Crohn's Disease",
+    uc: 'Ulcerative Colitis', nafld: 'NAFLD (Non-Alcoholic Fatty Liver)', leakygut: 'Leaky Gut Syndrome',
+    sibo: 'SIBO (Small Intestinal Bacterial Overgrowth)', dysbiosis: 'Gut Dysbiosis', gastritis: 'Gastritis',
+    hpylori: 'H. pylori Infection', diverticulitis: 'Diverticulitis', parasitic: 'Parasitic Infection',
+    gallbladder: 'Gallbladder Dysfunction', adhd: 'ADHD', brain: 'Brain Dysfunction / Cognitive Decline',
+    vertigo: 'Vertigo / Vestibular Dysfunction', ms: 'Multiple Sclerosis', migraine: 'Migraines / Chronic Headaches',
+    insomnia: 'Insomnia / Sleep Dysfunction', anxdep: 'Anxiety / Depression', neuropathy: 'Neuropathy',
+    alzheimers: "Alzheimer's / Dementia", parkinsons: "Parkinson's Disease", autoimmune: 'Autoimmune Disease (General)',
+    ebv: 'EBV / Epstein-Barr Reactivation', mcas: 'Mast Cell Activation Syndrome (MCAS)', longcovid: 'Long COVID',
+    lyme: 'Lyme Disease / Tick-Borne Illness', allergies: 'Allergies / Histamine Intolerance',
+    adrenal: 'Adrenal Dysfunction / HPA Axis', pcos: 'PCOS (Polycystic Ovary Syndrome)',
+    cholesterol: 'High Cholesterol / Dyslipidemia', htn: 'Hypertension (High Blood Pressure)',
+    pots: 'POTS (Postural Orthostatic Tachycardia)', hashimotos: "Hashimoto's Thyroiditis",
+    lowtestosterone: 'Low Testosterone (Men)', diabetes: 'Type 2 Diabetes', heartdisease: 'Heart Disease',
+    eds: 'Ehlers-Danlos Syndrome (EDS)', psoriasis: 'Psoriasis', eczema: 'Eczema / Atopic Dermatitis',
+    psa: 'Psoriatic Arthritis / Ankylosing Spondylitis', arthritis: 'Inflammatory Arthritis',
+    heavymetals: 'Heavy Metal Toxicity', mcs: 'Multiple Chemical Sensitivity', oxalate: 'Oxalate Toxicity',
+    mold: 'Mold / Mycotoxin Illness', candida: 'Candida Overgrowth', rheumatoid: 'Rheumatoid Arthritis',
+    osteoarthritis: 'Osteoarthritis', osteoporosis: 'Osteoporosis', fibromyalgia: 'Fibromyalgia',
+    cfs: 'Chronic Fatigue Syndrome (ME/CFS)', raynauds: "Raynaud's Syndrome", kidney: 'Kidney Dysfunction'
+  };
+  try {
+    var id = new URLSearchParams(window.location.search).get('c');
+    var name = id && NAMES[id];
+    var el = document.getElementById('discovery-greeting');
+    if (!name || !el) return;
+    el.textContent = 'Your assessment flagged ' + name + ' as your top pattern. This session is where we dig into what is driving it.';
+    el.style.display = 'block';
+  } catch (e) { /* greeting is optional */ }
+})();
+</script>
 
 <section>
   <div class="wrap">
@@ -260,5 +299,28 @@
   document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
 </script>
 
+<script>
+/* First-party pageview ping to Relay (added 2026-07-30). Create-only, same
+   public intake_key posture as lead capture. No cookies, no vendor. Sent as
+   text/plain so the request needs no CORS preflight. Skips localhost and
+   file:// so local work never lands in the table. */
+(function () {
+  try {
+    if (window.location.protocol.indexOf('http') !== 0) return;
+    if (/^(localhost|127\.|192\.168\.)/.test(window.location.hostname)) return;
+    fetch('https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({
+        intake_key: '97TfHjb8duWiZayVd6dzVnrt',
+        path: window.location.pathname.slice(0, 200),
+        search: window.location.search.slice(0, 300),
+        referrer: (document.referrer || '').slice(0, 300)
+      }),
+      keepalive: true
+    }).catch(function () {});
+  } catch (e) { /* tracking must never break the page */ }
+})();
+</script>
 </body>
 </html>
