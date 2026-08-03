@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+# Purchase delivery pages and their files. Reached only by the Stripe payment
+# link redirect after checkout, never linked from the site.
+Disallow: /kit/
 
 Sitemap: https://rootcauseunlocked.com/sitemap.xml
