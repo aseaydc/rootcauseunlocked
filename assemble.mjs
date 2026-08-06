@@ -2,15 +2,21 @@
    Run from the workspace root:  node RCU-Site/assemble.mjs
 
    The site's own pages are hand-written and live in this folder. The things
-   that are COPIED IN are the assessments: the canonical comprehensive
-   assessment is the workspace root index.html (live, script-maintained) and
-   the canonical MSK pain assessment is the workspace root msk-assessment.html.
-   They are deliberately NOT duplicated here by hand. This script copies them
-   to RCU-Site/quiz/index.html and RCU-Site/msk/index.html so the deployed
-   site serves them at /quiz and /msk.
+   that are COPIED IN are the assessments and the retest companion: the
+   canonical comprehensive assessment is the workspace root index.html (live,
+   script-maintained), the canonical MSK pain assessment is the workspace
+   root msk-assessment.html, and the canonical Root Tracker (daily check-ins,
+   trends, assessment deltas, retake planner, provider report) is the
+   workspace root rcu-tracker.html. They are deliberately NOT duplicated here
+   by hand. This script copies them to RCU-Site/quiz/index.html,
+   RCU-Site/msk/index.html, and RCU-Site/tracker/index.html so the deployed
+   site serves them at /quiz, /msk, and /tracker.
 
-   That keeps exactly one canonical copy of each assessment. Never hand-edit
-   the generated copies: edit the root files and re-run this script. */
+   That keeps exactly one canonical copy of each assessment/tool. Never
+   hand-edit the generated copies (2026-08-04: tracker/index.html had drifted
+   from a hand-patch with no source of truth before this script picked it up;
+   the drift was reconciled back into rcu-tracker.html, do not let it happen
+   again): edit the root files and re-run this script. */
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -21,7 +27,8 @@ const WORKSPACE = join(SITE, '..');
 
 const COPIES = [
   { src: 'index.html', dest: 'quiz' },
-  { src: 'msk-assessment.html', dest: 'msk' }
+  { src: 'msk-assessment.html', dest: 'msk' },
+  { src: 'rcu-tracker.html', dest: 'tracker' }
 ];
 
 try {

@@ -1,0 +1,9 @@
+# Word and Excel lock files. Office creates these next to a document while it
+# is open and deletes them on close, so they are pure noise, and committing one
+# publishes a stray binary to the live site. The kit .docx deliverables next to
+# them ARE tracked and must stay that way.
+~$*
+
+# macOS and Windows folder metadata.
+.DS_Store
+Thumbs.db
