@@ -1,7 +1,11 @@
 # Word and Excel lock files. Office creates these next to a document while it
 # is open and deletes them on close, so they are pure noise, and committing one
-# publishes a stray binary to the live site. The kit .docx deliverables next to
-# them ARE tracked and must stay that way.
+# publishes a stray binary to the live site.
+#
+# Note for future sessions: kit .docx files used to be tracked here and served to
+# buyers. They are not any more. PDF is the consumer deliverable; .docx is an
+# internal and provider-network asset (Nexus white-labeling) and lives in the
+# program folder in the workspace repo, not on the public site.
 ~$*
 
 # macOS and Windows folder metadata.
