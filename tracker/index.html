@@ -69,6 +69,10 @@ section.tab.active{display:block;}
 
 /* TODAY: SCALES */
 .today-date{color:var(--primary);font-size:1.35rem;margin-bottom:4px;}
+.msk-toggle{display:flex;gap:9px;align-items:flex-start;margin:10px 0 2px;padding:10px 12px;background:var(--primary-pale);border-radius:8px;cursor:pointer;font-family:Arial,sans-serif;font-size:0.8rem;line-height:1.45;color:var(--text-dark);}
+.msk-toggle input{margin-top:2px;flex-shrink:0;cursor:pointer;}
+.msk-toggle strong{display:block;color:var(--primary);}
+.msk-divider{margin:16px 0 2px;padding-top:14px;border-top:2px solid var(--primary-pale);font-family:Arial,sans-serif;font-size:0.74rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--primary);}
 .scale-block{padding:12px 0;border-bottom:1px solid var(--primary-pale);}
 .scale-block:last-of-type{border-bottom:none;}
 .scale-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
@@ -196,6 +200,10 @@ section.tab.active{display:block;}
     <div class="card">
       <h2 class="today-date" id="todayDate"></h2>
       <p class="sub">How was today? Tap one rating for each area.</p>
+      <label class="msk-toggle" for="mskToggle">
+        <input type="checkbox" id="mskToggle">
+        <span><strong>Recovery tracking</strong> Add four daily ratings built for pain, injury, and mobility work.</span>
+      </label>
       <div id="scalesWrap"></div>
       <div class="note-wrap">
         <label for="noteField">Anything worth remembering? (optional)</label>
@@ -269,6 +277,24 @@ const PAIRS = [
   { a:'digestion', b:'mood' },
   { a:'pain', b:'energy' }
 ];
+
+/* MSK mode: four extra daily metrics for musculoskeletal recovery, shown only
+   when rcu_prefs.mskMode is on. These are ADDITIVE optional fields on the same
+   rcu_checkins record; the key is a frozen contract and the base five metrics
+   above are never renamed or removed. Records saved before MSK mode existed
+   simply have no msk_* fields, and every reader below tolerates that.
+   All four run "higher is better" so the charts read the same direction. */
+const MSK_METRICS = [
+  { k:'msk_func',  label:'Daily function',        lo:'1 = Very limited',        hi:'5 = Doing what I want',  prose:'daily function' },
+  { k:'msk_rom',   label:'Movement and stiffness',lo:'1 = Very stiff',          hi:'5 = Moves freely',       prose:'movement' },
+  { k:'msk_load',  label:'Activity tolerance',    lo:'1 = Symptoms right away', hi:'5 = Held up all day',    prose:'activity tolerance' },
+  { k:'msk_flare', label:'Flare free',            lo:'1 = Bad flare',           hi:'5 = No flare at all',    prose:'freedom from flares' }
+];
+const MSK_PAIRS = [
+  { a:'msk_load',  b:'msk_flare', aLabel:'activity tolerance', bLabel:'flare free rating' },
+  { a:'sleep',     b:'msk_func',  aLabel:'sleep quality',      bLabel:'daily function' },
+  { a:'msk_rom',   b:'msk_func',  aLabel:'movement',           bLabel:'daily function' }
+];
 const WEEKDAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -280,20 +306,20 @@ const DEMO_CHECKED_2 = [46,30,15,34,9,5,14,1];
 const DEMO_CPCT_1 = [75,63,58,55,52,50,48,47,46, 44,43,42,40,38,36,35,33,32, 30,29,28,27,26,25,25,24,23, 22,21,20,19,18,17,16,15,14, 13,13,12,11,10,10,9,8,8, 7,6,5,4,3,2,1,0,0];
 const DEMO_CPCT_2 = [50,38,45,44,42,41,40,36,35, 40,33,32,31,30,29,28,27,26, 25,25,24,23,22,21,20,19,18, 17,17,16,15,14,13,13,12,11, 10,10,9,9,8,8,7,6,5, 5,4,4,3,3,2,2,1,0];
 const DEMO_IDS3 = ['leakygut','candida','adrenal'];
-/* per row: [daysAgo, sleep, energy, digestion, mood, pain, note] */
+/* per row: [daysAgo, sleep, energy, digestion, mood, pain, mskFunc, mskRom, mskLoad, mskFlare, note] */
 const DEMO_CHECKIN_SPECS = [
-  [13,2,2,3,3,3,'Rough night'],
-  [12,2,2,2,2,4,''],
-  [11,4,4,3,4,2,''],
-  [10,5,4,4,4,1,'Felt good today'],
-  [9, 2,3,2,3,4,''],
-  [8, 4,4,4,4,2,''],
-  [7, 3,3,3,3,3,''],
-  [6, 5,5,4,5,1,'Great day, long walk'],
-  [5, 2,2,2,2,4,''],
-  [4, 4,4,3,4,2,''],
-  [2, 5,4,4,4,1,''],
-  [1, 3,3,3,3,2,'Steady']
+  [13,2,2,3,3,3, 2,2,2,3, 'Rough night'],
+  [12,2,2,2,2,4, 2,1,1,1, ''],
+  [11,4,4,3,4,2, 3,3,3,4, ''],
+  [10,5,4,4,4,1, 4,4,4,5, 'Felt good today'],
+  [9, 2,3,2,3,4, 2,2,2,2, ''],
+  [8, 4,4,4,4,2, 4,3,3,4, ''],
+  [7, 3,3,3,3,3, 3,3,3,3, ''],
+  [6, 5,5,4,5,1, 5,4,5,5, 'Great day, long walk'],
+  [5, 2,2,2,2,4, 2,2,1,2, ''],
+  [4, 4,4,3,4,2, 4,4,4,4, ''],
+  [2, 5,4,4,4,1, 5,5,4,5, ''],
+  [1, 3,3,3,3,2, 4,4,4,4, 'Steady']
 ];
 function buildDemoAssessment(daysBack, checkedArr, cpctArr, top3, concern, checkedSymptoms){
   const d = new Date(); d.setDate(d.getDate() - daysBack); d.setHours(10,30,0,0);
@@ -317,9 +343,10 @@ const DEMO_ASSESSMENTS = [
 ];
 const DEMO_CHECKINS = DEMO_CHECKIN_SPECS.map(function(r){
   const d = new Date(); d.setDate(d.getDate() - r[0]);
-  return { d: dstr(d), sleep:r[1], energy:r[2], digestion:r[3], mood:r[4], pain:r[5], note:r[6] };
+  return { d: dstr(d), sleep:r[1], energy:r[2], digestion:r[3], mood:r[4], pain:r[5],
+           msk_func:r[6], msk_rom:r[7], msk_load:r[8], msk_flare:r[9], note:r[10] };
 }).sort(function(a,b){ return a.d < b.d ? -1 : 1; });
-const DEMO_PREFS = { v:1, retakeTarget:null, freezeUsedMonth:null };
+const DEMO_PREFS = { v:1, retakeTarget:null, freezeUsedMonth:null, mskMode:false };
 
 /* ---------------- tiny helpers ---------------- */
 function $(id){ return document.getElementById(id); }
@@ -342,8 +369,13 @@ function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('sho
 
 /* ---------------- state + storage access ---------------- */
 let demoMode = false;
-let state = { checkins:[], prefs:{ v:1, retakeTarget:null, freezeUsedMonth:null } };
-let todaySel = { energy:null, sleep:null, digestion:null, mood:null, pain:null };
+let state = { checkins:[], prefs:{ v:1, retakeTarget:null, freezeUsedMonth:null, mskMode:false } };
+let todaySel = { energy:null, sleep:null, digestion:null, mood:null, pain:null,
+                 msk_func:null, msk_rom:null, msk_load:null, msk_flare:null };
+/* MSK mode reads the user's own pref even while a sample preview is showing, so
+   the toggle visibly does something in the demo. */
+function mskOn(){ return !!state.prefs.mskMode; }
+function activeMetrics(){ return mskOn() ? METRICS.concat(MSK_METRICS) : METRICS; }
 
 function readAssessmentsRaw(){
   try{
@@ -370,7 +402,7 @@ function loadState(){
   state.checkins.sort(function(a,b){ return a.d < b.d ? -1 : 1; });
   try{
     const p = JSON.parse(localStorage.getItem(K_PREFS) || 'null');
-    if(p && typeof p==='object'){ state.prefs = { v:1, retakeTarget: p.retakeTarget || null, freezeUsedMonth: p.freezeUsedMonth || null }; }
+    if(p && typeof p==='object'){ state.prefs = { v:1, retakeTarget: p.retakeTarget || null, freezeUsedMonth: p.freezeUsedMonth || null, mskMode: !!p.mskMode }; }
   }catch(e){ /* keep defaults */ }
 }
 function persistCheckins(){
@@ -381,18 +413,37 @@ function persistCheckins(){
 function persistPrefs(){
   try{ localStorage.setItem(K_PREFS, JSON.stringify(state.prefs)); }catch(e){ /* non-fatal */ }
 }
+function scaleBlockHTML(m){
+  const btns = [1,2,3,4,5].map(function(v){
+    return '<button type="button" class="scale-btn" data-k="'+m.k+'" data-v="'+v+'">'+v+'</button>';
+  }).join('');
+  return '<div class="scale-block">'+
+    '<div class="scale-top"><span class="scale-name">'+m.label+'</span><span class="scale-val" id="val-'+m.k+'"></span></div>'+
+    '<div class="scale-btns">'+btns+'</div>'+
+    '<div class="scale-ends"><span>'+m.lo+'</span><span>'+m.hi+'</span></div>'+
+  '</div>';
+}
+function renderScales(){
+  let html = METRICS.map(scaleBlockHTML).join('');
+  if(mskOn()){
+    html += '<div class="msk-divider">Recovery tracking</div>' +
+            MSK_METRICS.map(scaleBlockHTML).join('');
+  }
+  $('scalesWrap').innerHTML = html;
+}
 function buildScales(){
   const wrap = $('scalesWrap');
-  wrap.innerHTML = METRICS.map(function(m){
-    const btns = [1,2,3,4,5].map(function(v){
-      return '<button type="button" class="scale-btn" data-k="'+m.k+'" data-v="'+v+'">'+v+'</button>';
-    }).join('');
-    return '<div class="scale-block">'+
-      '<div class="scale-top"><span class="scale-name">'+m.label+'</span><span class="scale-val" id="val-'+m.k+'"></span></div>'+
-      '<div class="scale-btns">'+btns+'</div>'+
-      '<div class="scale-ends"><span>'+m.lo+'</span><span>'+m.hi+'</span></div>'+
-    '</div>';
-  }).join('');
+  renderScales();
+  const toggle = $('mskToggle');
+  toggle.checked = mskOn();
+  toggle.addEventListener('change', function(){
+    state.prefs.mskMode = toggle.checked;
+    persistPrefs();
+    renderScales();
+    renderToday();
+    renderTrends();
+    toast(toggle.checked ? 'Recovery tracking on.' : 'Recovery tracking off. Your saved entries are kept.');
+  });
   wrap.addEventListener('click', function(ev){
     const b = ev.target.closest('.scale-btn'); if(!b) return;
     todaySel[b.dataset.k] = +b.dataset.v;
@@ -404,22 +455,24 @@ function buildScales(){
   $('saveBtn').addEventListener('click', saveToday);
 }
 function paintScales(){
-  METRICS.forEach(function(m){
+  const active = activeMetrics();
+  active.forEach(function(m){
     const sel = todaySel[m.k];
     document.querySelectorAll('.scale-btn[data-k="'+m.k+'"]').forEach(function(b){
       b.classList.toggle('on', sel !== null && +b.dataset.v === sel);
     });
-    $('val-'+m.k).textContent = sel ? ('Rated '+sel+' of 5') : '';
+    const cell = $('val-'+m.k);
+    if(cell) cell.textContent = sel ? ('Rated '+sel+' of 5') : '';
   });
-  const ready = METRICS.every(function(m){ return todaySel[m.k] !== null; });
+  const ready = active.every(function(m){ return todaySel[m.k] !== null; });
   $('saveBtn').disabled = !ready;
-  $('saveHint').textContent = ready ? '' : 'Tap a rating for each of the five areas.';
+  $('saveHint').textContent = ready ? '' : ('Tap a rating for each of the '+active.length+' areas.');
 }
 function renderToday(){
   $('todayDate').textContent = fmtLongDate(new Date());
   const existing = state.checkins.find(function(c){ return c.d === todayStr(); });
   if(existing){
-    METRICS.forEach(function(m){ todaySel[m.k] = existing[m.k] || null; });
+    METRICS.concat(MSK_METRICS).forEach(function(m){ todaySel[m.k] = existing[m.k] || null; });
     $('noteField').value = existing.note || '';
     $('saveBtn').textContent = 'Update today';
   }else{
@@ -431,12 +484,26 @@ function renderToday(){
 }
 function saveToday(){
   if(isDemoCheckins()){ toast('Preview only. Exit the sample preview to save your own check-in.'); return; }
-  const ready = METRICS.every(function(m){ return todaySel[m.k] !== null; });
+  const ready = activeMetrics().every(function(m){ return todaySel[m.k] !== null; });
   if(!ready) return;
   const d = todayStr();
   const entry = { d:d, energy:todaySel.energy, sleep:todaySel.sleep, digestion:todaySel.digestion, mood:todaySel.mood, pain:todaySel.pain, note: $('noteField').value.slice(0,200) };
   const idx = state.checkins.findIndex(function(c){ return c.d === d; });
   const updating = idx >= 0;
+  /* MSK fields are optional add-ons. Carry forward anything already stored for
+     this day so toggling the mode off never destroys recovery data, then write
+     today's values when the mode is on. */
+  if(updating){
+    MSK_METRICS.forEach(function(m){
+      const prev = state.checkins[idx][m.k];
+      if(typeof prev === 'number') entry[m.k] = prev;
+    });
+  }
+  if(mskOn()){
+    MSK_METRICS.forEach(function(m){
+      if(todaySel[m.k] !== null) entry[m.k] = todaySel[m.k];
+    });
+  }
   if(updating) state.checkins[idx] = entry; else state.checkins.push(entry);
   persistCheckins();
   if(demoMode) demoMode = false;
@@ -587,22 +654,26 @@ function drawMetricChart(canvas, cs, key){
 }
 function pairInsights(cs){
   const out = [];
-  PAIRS.forEach(function(p){
-    const hi = cs.filter(function(c){ return c[p.a] >= 4; });
-    const lo = cs.filter(function(c){ return c[p.a] <= 2; });
+  const pairs = mskOn() ? PAIRS.concat(MSK_PAIRS) : PAIRS;
+  pairs.forEach(function(p){
+    /* Both sides must be numeric. MSK fields are absent on records saved before
+       recovery tracking was switched on, and an undefined would poison avgOf. */
+    const usable = cs.filter(function(c){ return typeof c[p.a]==='number' && typeof c[p.b]==='number'; });
+    const hi = usable.filter(function(c){ return c[p.a] >= 4; });
+    const lo = usable.filter(function(c){ return c[p.a] <= 2; });
     if(hi.length < 3 || lo.length < 3) return;
     const hAvg = avgOf(hi.map(function(c){ return c[p.b]; }));
     const lAvg = avgOf(lo.map(function(c){ return c[p.b]; }));
     const gap = hAvg - lAvg;
     if(Math.abs(gap) < 0.7) return;
     const dir = gap > 0 ? 'higher' : 'lower';
-    out.push('On days you rated '+p.a+' 4 or higher, your '+p.b+' averaged '+r1(Math.abs(gap))+' points '+dir+' (based on '+(hi.length+lo.length)+' check-ins).');
+    out.push('On days you rated '+(p.aLabel||p.a)+' 4 or higher, your '+(p.bLabel||p.b)+' averaged '+r1(Math.abs(gap))+' points '+dir+' (based on '+(hi.length+lo.length)+' check-ins).');
   });
   return out;
 }
 function weekdayInsights(cs){
   const out = [];
-  METRICS.forEach(function(m){
+  activeMetrics().forEach(function(m){
     const byDay = [[],[],[],[],[],[],[]];
     cs.forEach(function(c){ if(typeof c[m.k]==='number') byDay[parseD(c.d).getDay()].push(c[m.k]); });
     const cands = [];
@@ -611,7 +682,7 @@ function weekdayInsights(cs){
     let best = cands[0], worst = cands[0];
     cands.forEach(function(c){ if(c.avg > best.avg) best = c; if(c.avg < worst.avg) worst = c; });
     if(best.d === worst.d || Math.abs(best.avg - worst.avg) < 0.05) return;
-    out.push('Your '+m.k+' tends to be highest on '+WEEKDAYS[best.d]+'s and lowest on '+WEEKDAYS[worst.d]+'s.');
+    out.push('Your '+(m.prose || m.label.toLowerCase())+' tends to be highest on '+WEEKDAYS[best.d]+'s and lowest on '+WEEKDAYS[worst.d]+'s.');
   });
   return out;
 }
@@ -642,14 +713,14 @@ function renderTrends(){
     chartsHTML = '<div class="card"><h3>Last 30 days</h3><p class="sub">No check-ins in the last 30 days. Your older history is still saved.</p></div>';
   }else{
     chartsHTML = '<div class="card"><h3>Last 30 days</h3>'+
-      METRICS.map(function(m){
+      activeMetrics().map(function(m){
         return '<div class="chart-block"><div class="chart-title">'+m.label+'</div><canvas id="chart-'+m.k+'" width="640" height="170"></canvas></div>';
       }).join('')+
       '<p class="muted">Dots show each day\'s rating. The dark line is your 7 day average.</p></div>';
   }
   wrap.innerHTML = weeklySummaryHTML(cs) + chartsHTML + insightsHTML(cs);
   if(recent.length){
-    METRICS.forEach(function(m){ drawMetricChart($('chart-'+m.k), cs, m.k); });
+    activeMetrics().forEach(function(m){ drawMetricChart($('chart-'+m.k), cs, m.k); });
   }
 }
 
@@ -769,7 +840,7 @@ function renderReport(){
   }).join('');
   let checkinBlock;
   if(recent.length){
-    const avgs = METRICS.map(function(m){
+    const avgs = activeMetrics().map(function(m){
       const vals = recent.filter(function(c){ return typeof c[m.k]==='number'; }).map(function(c){ return c[m.k]; });
       return m.label+' '+(vals.length ? r1(avgOf(vals)) : 'n/a');
     }).join(', ');
