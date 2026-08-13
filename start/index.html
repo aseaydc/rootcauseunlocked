@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where should you start? · Root Cause Unlocked</title>
+<meta name="description" content="Seven quick taps to find which body system is worth mapping first. Free, no account, about a minute.">
+<meta property="og:title" content="Where should you start?">
+<meta property="og:description" content="Seven quick taps to find which body system is worth mapping first.">
+<meta property="og:image" content="/assets/logo-lockup.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="/assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/styles.css">
+<style>
+.start-wrap { max-width: 620px; margin: 0 auto; padding: 0 22px; }
+.start-stage { padding: 64px 0 90px; min-height: 62vh; }
+.start-screen { display: none; }
+.start-screen.active { display: block; animation: startIn .28s ease; }
+@keyframes startIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.start-q { font-size: clamp(1.5rem, 4.2vw, 2.1rem); line-height: 1.2; margin: 0 0 26px; }
+.start-opts { display: grid; gap: 12px; }
+.start-opt {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  background: var(--white, #fff); border: 1.5px solid rgba(14,14,16,.16); border-radius: 16px;
+  padding: 18px 20px; font-family: inherit; font-size: 1.02rem; font-weight: 500; color: inherit;
+  transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+.start-opt:hover, .start-opt:focus-visible { border-color: var(--ink, #0E0E10); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(14,14,16,.08); }
+.start-dots { display: flex; gap: 8px; margin-bottom: 30px; }
+.start-dots span { width: 26px; height: 4px; border-radius: 2px; background: rgba(14,14,16,.12); }
+.start-dots span.on { background: var(--blue, #5987C5); }
+.start-back { background: none; border: none; font-family: inherit; font-size: .84rem; color: rgba(14,14,16,.55); cursor: pointer; padding: 0; margin-top: 26px; }
+.start-back:hover { color: var(--ink, #0E0E10); }
+.start-note { font-size: .84rem; color: rgba(14,14,16,.5); margin-top: 30px; line-height: 1.5; }
+.start-tease-label { margin-bottom: 14px; }
+.start-systems { font-family: 'Instrument Serif', serif; font-size: clamp(1.7rem, 5vw, 2.5rem); line-height: 1.15; margin: 0 0 18px; }
+.start-email { display: grid; gap: 10px; margin-top: 26px; }
+.start-email input[type=email], .start-email input[type=text] {
+  width: 100%; padding: 14px 16px; border: 1.5px solid rgba(14,14,16,.2); border-radius: 12px;
+  font-family: inherit; font-size: .98rem; outline: none;
+}
+.start-email input:focus { border-color: var(--blue, #5987C5); }
+.start-consent { display: flex; gap: 9px; align-items: flex-start; font-size: .8rem; color: rgba(14,14,16,.6); line-height: 1.45; }
+.start-consent input { margin-top: 3px; }
+.start-err { display: none; font-size: .85rem; color: #b03a2e; }
+.start-ok { display: none; font-size: .9rem; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="/" aria-label="Root Cause Unlocked home">
+      <img src="/assets/logo-header.png" alt="Root Cause Unlocked" width="560" height="330">
+    </a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+    <nav class="nav">
+      <a href="/programs">Programs</a>
+      <a href="/discovery">Discovery</a>
+      <a href="/about">About</a>
+      <a class="btn" href="/quiz">Take the assessment</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="start-stage">
+  <div class="start-wrap">
+
+    <div class="start-dots" id="dots" aria-hidden="true"></div>
+
+    <!-- Screen 0: intro -->
+    <div class="start-screen active" data-screen="0">
+      <p class="label">About a minute · 7 taps</p>
+      <h1 class="start-q">Where should you even start?</h1>
+      <p class="lead" style="margin-bottom:28px">Seven quick taps. No typing, no account, nothing to sign up for. At the end you get the body system your answers point to first, and the fastest way to map it properly.</p>
+      <div class="start-opts">
+        <button class="start-opt" onclick="go(1)"><strong>Start &#8594;</strong></button>
+      </div>
+      <p class="start-note">Educational only. This does not diagnose anything, and it is not a substitute for care from your own clinicians.</p>
+    </div>
+
+    <!-- Screen 1 -->
+    <div class="start-screen" data-screen="1">
+      <h2 class="start-q">What sent you looking today?</h2>
+      <div class="start-opts">
+        <button class="start-opt" onclick="pick(1,'hormonal')">Energy that never recovers, no matter how much I rest</button>
+        <button class="start-opt" onclick="pick(1,'gut')">Gut trouble: bloating, food reactions, unpredictable digestion</button>
+        <button class="start-opt" onclick="pick(1,'msk')">Pain, numbness, tingling, or joints that ache and move around</button>
+        <button class="start-opt" onclick="pick(1,'brain')">Brain fog, mood, or sleep that stopped cooperating</button>
+      </div>
+    </div>
+
+    <!-- Screen 2 -->
+    <div class="start-screen" data-screen="2">
+      <h2 class="start-q">Your labs so far have mostly come back...</h2>
+      <div class="start-opts">
+        <button class="start-opt" onclick="pick(2,null)">Normal, even though I feel anything but</button>
+        <button class="start-opt" onclick="pick(2,null)">Borderline, with a "let's watch it" and no plan</button>
+        <button class="start-opt" onclick="pick(2,null)">Flagged and treated, but I still do not feel like myself</button>
+        <button class="start-opt" onclick="pick(2,null)">I have not been tested much at all</button>
+      </div>
+      <button class="start-back" onclick="go(1)">&#8592; Back</button>
+    </div>
+
+    <!-- Screen 3 -->
+    <div class="start-screen" data-screen="3">
+      <h2 class="start-q">When is it worst?</h2>
+      <div class="start-opts">
+        <button class="start-opt" onclick="pick(3,'gut')">After meals</button>
+        <button class="start-opt" onclick="pick(3,'hormonal')">Mid-afternoon, when the energy floor drops out</button>
+        <button class="start-opt" onclick="pick(3,'brain')">At night, when sleep will not come or will not hold</button>
+        <button class="start-opt" onclick="pick(3,'immune')">All day, most days</button>
+      </div>
+      <button class="start-back" onclick="go(2)">&#8592; Back</button>
+    </div>
+
+    <!-- Screen 4 -->
+    <div class="start-screen" data-screen="4">
+      <h2 class="start-q">Which of these sounds most like you?</h2>
+      <div class="start-opts">
+        <button class="start-opt" onclick="pick(4,'gut')">Bloating, reflux, or a shrinking list of safe foods</button>
+        <button class="start-opt" onclick="pick(4,'hormonal')">Cold hands, thinning hair, stubborn weight</button>
+        <button class="start-opt" onclick="pick(4,'msk')">Joint or muscle pain that migrates or flares</button>
+        <button class="start-opt" onclick="pick(4,'toxic')">Rashes, itching, or reactions to smells and chemicals</button>
+      </div>
+      <button class="start-back" onclick="go(3)">&#8592; Back</button>
+    </div>
+
+    <!-- Screen 5 -->
+    <div class="start-screen" data-screen="5">
+      <h2 class="start-q">Does anything in your environment change it?</h2>
+      <div class="start-opts">
+        <button class="start-opt" onclick="pick(5,'toxic')">Worse in certain buildings, better when I leave</button>
+        <button class="start-opt" onclick="pick(5,'gut')">Worse after certain foods</button>
+        <button class="start-opt" onclick="pick(5,'brain')">Worse under stress, better on vacation</button>
+        <button class="start-opt" onclick="pick(5,null)">No pattern I can see</button>
+      </div>
+      <button class="start-back" onclick="go(4)">&#8592; Back</button>
+    </div>
+
+    <!-- Screen 6 -->
+    <div class="start-screen" data-screen="6">
+      <h2 class="start-q">How long has this been going on?</h2>
+      <div class="start-opts">
+        <button class="start-opt" onclick="pick(6,null)">A few months</button>
+        <button class="start-opt" onclick="pick(6,null)">A year or two</button>
+        <button class="start-opt" onclick="pick(6,null)">As long as I can remember</button>
+        <button class="start-opt" onclick="pick(6,null)">It comes and goes in waves</button>
+      </div>
+      <button class="start-back" onclick="go(5)">&#8592; Back</button>
+    </div>
+
+    <!-- Screen 7 -->
+    <div class="start-screen" data-screen="7">
+      <h2 class="start-q">How many providers have you seen for this?</h2>
+      <div class="start-opts">
+        <button class="start-opt" onclick="pick(7,null)">None yet, or just one</button>
+        <button class="start-opt" onclick="pick(7,null)">Two or three</button>
+        <button class="start-opt" onclick="pick(7,null)">Four or more</button>
+        <button class="start-opt" onclick="pick(7,null)">Honestly, I have lost count</button>
+      </div>
+      <button class="start-back" onclick="go(6)">&#8592; Back</button>
+    </div>
+
+    <!-- Screen 8: tease -->
+    <div class="start-screen" data-screen="8">
+      <p class="label start-tease-label">Your starting point</p>
+      <h2 class="start-systems" id="tease-line"></h2>
+      <p class="lead" id="tease-body" style="margin-bottom:8px"></p>
+      <p class="start-note" style="margin-top:14px">Seven taps can point a direction. They cannot score 54 conditions. The full assessment can, it is free, takes a few minutes, and your results appear on screen immediately.</p>
+      <div class="btn-row" style="margin-top:26px">
+        <a class="btn btn-lg" id="cta-quiz" href="/quiz">Take the full assessment</a>
+      </div>
+      <div class="start-email">
+        <p style="font-size:.9rem;font-weight:600;margin:18px 0 2px">Or send my starting point to my inbox first:</p>
+        <input type="text" id="sp-name" placeholder="First name" autocomplete="given-name">
+        <input type="email" id="sp-email" placeholder="you@example.com" autocomplete="email">
+        <label class="start-consent"><input type="checkbox" id="sp-consent"><span>Yes, email me my starting point and root cause health information from Root Health. I can unsubscribe anytime. This is educational and not medical advice.</span></label>
+        <p class="start-err" id="sp-err"></p>
+        <p class="start-ok" id="sp-ok">Sent. Check your inbox, then take the full assessment when you are ready.</p>
+        <button class="btn btn-ghost" id="sp-send" onclick="sendStartingPoint()" style="justify-self:start">Email it to me</button>
+      </div>
+      <button class="start-back" onclick="restart()">&#8592; Start over</button>
+    </div>
+
+  </div>
+</section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <img class="footer-logo-img" src="/assets/logo-footer.png" alt="Root Cause Unlocked" width="760" height="448">
+    <div class="footer-grid">
+      <div>
+        <p>Educational resources for people whose symptoms have outlasted their explanations.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="/quiz">Free assessment</a></li>
+          <li><a href="/programs">Programs</a></li>
+          <li><a href="/discovery">Discovery Session</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Programs</h4>
+        <ul class="footer-links">
+          <li><a href="/unlock-your-hashimotos">Hashimoto's</a></li>
+          <li><a href="/unlock-your-gut">Gut</a></li>
+          <li><a href="/unlock-your-lyme">Lyme</a></li>
+          <li><a href="/unlock-your-mold">Mold Toxicity</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul class="footer-links">
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Use</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p><strong>Medical disclaimer.</strong> The content on this site is for educational purposes only. It does not diagnose, treat, or cure any condition, and it is not a substitute for care from your own clinicians. If you take a prescribed medication, keep taking it and keep your prescriber in the loop.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* Same public intake posture as the quiz email gate. The intake_key can only
+   create a consented lead for this tenant; it can never read or send.
+   program 'start' has no quiz_completed:start sequence yet, so this captures
+   the lead without enrolling it in the comprehensive results nurture. */
+var RELAY_INTAKE_URL = 'https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/intake';
+var RELAY_INTAKE_KEY = '97TfHjb8duWiZayVd6dzVnrt';
+
+var SYSTEM_NAMES = {
+  gut: 'gut and digestive system',
+  brain: 'brain and nervous system',
+  immune: 'immune system',
+  hormonal: 'hormonal and metabolic system',
+  toxic: 'environmental and toxic load',
+  msk: 'musculoskeletal and nerve picture'
+};
+
+var current = 0;
+var TOTAL = 8;
+var tally = {};
+
+function renderDots() {
+  var d = document.getElementById('dots');
+  var html = '';
+  for (var i = 1; i < TOTAL; i++) html += '<span class="' + (i <= current ? 'on' : '') + '"></span>';
+  d.innerHTML = html;
+  d.style.visibility = current === 0 ? 'hidden' : 'visible';
+}
+
+function go(n) {
+  document.querySelector('.start-screen.active').classList.remove('active');
+  document.querySelector('[data-screen="' + n + '"]').classList.add('active');
+  current = n;
+  renderDots();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pick(screen, system) {
+  if (system) tally[system] = (tally[system] || 0) + 1;
+  if (screen < 7) go(screen + 1);
+  else showTease();
+}
+
+function topSystems() {
+  var entries = Object.keys(tally).map(function (k) { return [k, tally[k]]; });
+  entries.sort(function (a, b) { return b[1] - a[1]; });
+  return entries.filter(function (e) { return e[1] > 0; }).slice(0, 2).map(function (e) { return e[0]; });
+}
+
+function showTease() {
+  var top = topSystems();
+  var line, body;
+  if (top.length === 0) {
+    line = 'Your pattern does not point one clear direction yet.';
+    body = 'That is not a dead end. It usually means the signal is spread across systems, which is exactly what the full assessment is built to untangle.';
+  } else if (top.length === 1) {
+    line = 'Your answers point first at your ' + SYSTEM_NAMES[top[0]] + '.';
+    body = 'That is where mapping should start. Not because anything is confirmed, but because that is where your answers cluster.';
+  } else {
+    line = 'Your answers point first at your ' + SYSTEM_NAMES[top[0]] + ', with your ' + SYSTEM_NAMES[top[1]] + ' close behind.';
+    body = 'When two systems light up together, the overlap is usually where the real story lives. That overlap is what the full assessment maps.';
+  }
+  document.getElementById('tease-line').textContent = line;
+  document.getElementById('tease-body').textContent = body;
+  var q = document.getElementById('cta-quiz');
+  q.href = '/quiz' + window.location.search;
+  go(8);
+}
+
+function restart() {
+  tally = {};
+  go(0);
+}
+
+function sendStartingPoint() {
+  var name = document.getElementById('sp-name').value.trim();
+  var email = document.getElementById('sp-email').value.trim();
+  var consent = document.getElementById('sp-consent').checked;
+  var err = document.getElementById('sp-err');
+  err.style.display = 'none';
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    err.textContent = 'Please enter a valid email address.';
+    err.style.display = 'block';
+    return;
+  }
+  if (!consent) {
+    err.textContent = 'Please check the box so we can send it.';
+    err.style.display = 'block';
+    return;
+  }
+  var top = topSystems();
+  var btn = document.getElementById('sp-send');
+  btn.disabled = true;
+  fetch(RELAY_INTAKE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      intake_key: RELAY_INTAKE_KEY,
+      email: email,
+      name: name || undefined,
+      consent: true,
+      program: 'start',
+      source: 'start_flow',
+      merge_fields: {
+        first_name: name,
+        top_system: top[0] ? SYSTEM_NAMES[top[0]] : 'unclear',
+        second_system: top[1] ? SYSTEM_NAMES[top[1]] : ''
+      }
+    })
+  }).catch(function () {}).finally(function () {
+    document.getElementById('sp-ok').style.display = 'block';
+    btn.style.display = 'none';
+  });
+}
+
+renderDots();
+
+/* Shared mobile nav toggle, same as every other page */
+(function () {
+  var t = document.querySelector('.nav-toggle');
+  var n = document.querySelector('.nav');
+  if (!t || !n) return;
+  t.addEventListener('click', function () {
+    var open = n.classList.toggle('open');
+    t.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+</script>
+
+</body>
+</html>
