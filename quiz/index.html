@@ -229,30 +229,9 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);
 <!-- QUIZ SECTION -->
 <div class="main-wrap" id="quiz-section">
 
-  <div class="patient-card">
-    <h3>Patient Information</h3>
-    <div class="info-grid">
-      <div class="info-field"><label>First Name *</label><input type="text" id="fname" placeholder="Jane"></div>
-      <div class="info-field"><label>Last Name</label><input type="text" id="lname" placeholder="Doe"></div>
-      <div class="info-field"><label>Date of Birth</label><input type="date" id="dob"></div>
-      <div class="info-field"><label>Biological Sex</label>
-        <select id="sex">
-          <option value="">Select...</option>
-          <option>Female</option><option>Male</option><option>Prefer not to say</option>
-        </select>
-      </div>
-      <div class="info-field" style="grid-column:1/-1">
-        <label>Primary Health Concern (optional)</label>
-        <input type="text" id="concern" placeholder="e.g. chronic fatigue, digestive issues, brain fog...">
-      </div>
-    </div>
-  </div>
-
   <div class="quiz-intro">
     <strong>Instructions:</strong> Work through each of the <span id="hero-tab-count">8</span> category tabs and check every symptom you have experienced in the <strong>past 3 months</strong>. You do not need a formal diagnosis. Check anything that applies. Click <strong>Next Section</strong> after each tab. Your personalized results will generate after the final section.
   </div>
-
-  <div class="val-msg" id="val-msg"></div>
 
   <div class="progress-wrap">
     <div class="progress-top">
@@ -338,7 +317,28 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);
       <p><span id="tabcount-7">1</span> condition. Check every symptom that applies to you</p>
     </div>
     <div class="tab-panel-body" id="body-7"></div>
+
+    <div class="patient-card">
+      <h3>Last step: who is this report for?</h3>
+      <div class="info-grid">
+        <div class="info-field"><label>First Name *</label><input type="text" id="fname" placeholder="Jane"></div>
+        <div class="info-field"><label>Last Name</label><input type="text" id="lname" placeholder="Doe"></div>
+        <div class="info-field"><label>Date of Birth</label><input type="date" id="dob"></div>
+        <div class="info-field"><label>Biological Sex</label>
+          <select id="sex">
+            <option value="">Select...</option>
+            <option>Female</option><option>Male</option><option>Prefer not to say</option>
+          </select>
+        </div>
+        <div class="info-field" style="grid-column:1/-1">
+          <label>Primary Health Concern (optional)</label>
+          <input type="text" id="concern" placeholder="e.g. chronic fatigue, digestive issues, brain fog...">
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div class="val-msg" id="val-msg"></div>
 
   <div class="tab-nav-btns">
     <button class="btn-nav btn-prev" id="btn-prev" onclick="prevTab()" style="visibility:hidden">&#8592; Previous</button>
