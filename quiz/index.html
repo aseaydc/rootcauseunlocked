@@ -766,7 +766,7 @@ function rcuGetAttribution() {
 // wire it back up. ----
 const PROGRAM_PAGE_BY_CONDITION = {
   // Gut/GI cluster
-  gerd:           'https://rootcauseunlocked.com/unlock-your-gut',
+  gerd:           'https://rootcauseunlocked.com/unlock-your-reflux',
   ibs:            'https://rootcauseunlocked.com/unlock-your-gut',
   crohns:         'https://rootcauseunlocked.com/unlock-your-gut', // educational routing only, no paid card
   uc:             'https://rootcauseunlocked.com/unlock-your-gut', // educational routing only, no paid card
@@ -781,7 +781,9 @@ const PROGRAM_PAGE_BY_CONDITION = {
   gallbladder:    'https://rootcauseunlocked.com/unlock-your-gut',
   psoriasis:      'https://rootcauseunlocked.com/unlock-your-gut', // skin-gut axis
   eczema:         'https://rootcauseunlocked.com/unlock-your-gut', // skin-gut axis
-  allergies:      'https://rootcauseunlocked.com/unlock-your-gut', // histamine handling
+  allergies:      'https://rootcauseunlocked.com/unlock-your-allergies',
+  fibromyalgia:   'https://rootcauseunlocked.com/fibromyalgia',
+  migraine:       'https://rootcauseunlocked.com/unlock-your-migraines',
   // Infection cluster
   candida:        'https://rootcauseunlocked.com/unlock-your-candida',
   lyme:           'https://rootcauseunlocked.com/unlock-your-lyme',
@@ -881,7 +883,11 @@ const STRIPE_LINKS = {
   lyme: 'https://buy.stripe.com/aFafZhbfD8LSaO6blj9ws0l',
   mold: 'https://buy.stripe.com/8x228r97vd28g8qblj9ws0i',
   hashimotos: 'https://buy.stripe.com/14A6oH2J7e6cbSablj9ws0a',
-  neuropathy: 'https://buy.stripe.com/dRm28r6Zn9PW9K2dtr9ws01'
+  neuropathy: 'https://buy.stripe.com/dRm28r6Zn9PW9K2dtr9ws01',
+  allergies: 'https://buy.stripe.com/8x27sLcjH3ry2hAahf9ws0f',
+  fibromyalgia: 'https://buy.stripe.com/eVqbJ11F38LS5tMgFD9ws0c',
+  migraines: 'https://buy.stripe.com/eVqfZh2J79PWg8qexv9ws04',
+  reflux: 'https://buy.stripe.com/8x27sLerP0fmbSa7539ws0o'
 };
 // Maps CONDITIONS ids to their ebook, in lockstep with PROGRAM_PAGE_BY_CONDITION
 // (Adam, 2026-07-30): High-confidence cluster rows only. Claims-care rows
@@ -890,7 +896,7 @@ const STRIPE_LINKS = {
 // page and booking CTAs with no paid card. All cards stay suppressed anyway
 // until real Stripe Payment Links replace the placeholders above.
 const EBOOK_BY_CONDITION = {
-  gerd:           { product: 'gut',        title: 'Unlock Your Gut' },
+  gerd:           { product: 'reflux',     title: 'Unlock Your Reflux' },
   ibs:            { product: 'gut',        title: 'Unlock Your Gut' },
   leakygut:       { product: 'gut',        title: 'Unlock Your Gut' },
   dysbiosis:      { product: 'gut',        title: 'Unlock Your Gut' },
@@ -903,7 +909,10 @@ const EBOOK_BY_CONDITION = {
   lyme:           { product: 'lyme',       title: 'Unlock Your Lyme' },
   mold:           { product: 'mold',       title: 'Unlock Your Mold' },
   hashimotos:     { product: 'hashimotos', title: "Unlock Your Hashimoto's" },
-  neuropathy:     { product: 'neuropathy', title: 'Unlock Your Neuropathy' }
+  neuropathy:     { product: 'neuropathy', title: 'Unlock Your Neuropathy' },
+  allergies:      { product: 'allergies',  title: 'Unlock Your Allergies' },
+  fibromyalgia:   { product: 'fibromyalgia', title: 'Unlock Your Fibromyalgia' },
+  migraine:       { product: 'migraines',  title: 'Unlock Your Migraines' }
 };
 // Per-ebook card copy: transformation first, then what they have been living with.
 const TRIPWIRE_COPY = {
@@ -930,6 +939,22 @@ const TRIPWIRE_COPY = {
   neuropathy: {
     headline: 'Imagine trusting your feet again, from the first step out of bed to the end of a long day.',
     body: 'The tingling, the burning, the numbness that makes every step feel uncertain: nerve symptoms wear you down and rarely explain themselves. This ebook walks you through what drives nerve dysfunction and the root cause steps you can start today.'
+  },
+  allergies: {
+    headline: 'Imagine a spring you actually get to be outside for.',
+    body: 'The daily antihistamine, the congestion, the list of reactions that keeps widening: you have been managing this for years without anyone asking why your immune system became this reactive. This ebook walks you through what drives allergic and histamine reactivity and the root cause steps you can start today.'
+  },
+  fibromyalgia: {
+    headline: 'Imagine waking up in a body that is not already tired and already hurting.',
+    body: 'The pain everywhere, the exhaustion that sleep never touches, the workups that keep coming back clean: fibromyalgia means being told nothing is wrong while nothing feels right. This ebook walks you through what drives widespread pain and fatigue and the root cause steps you can start today.'
+  },
+  migraines: {
+    headline: 'Imagine planning a week without leaving room for the days you will lose.',
+    body: 'The attacks, the medication, the trigger hunting that never quite lands: you have been managing migraines for years without anyone asking what is setting them off. This ebook walks you through what drives migraine and the root cause steps you can start today.'
+  },
+  reflux: {
+    headline: 'Imagine finishing dinner without doing the math on what it will cost you tonight.',
+    body: 'The burning, the medication that stopped working as well as it did, the foods that quietly disappeared from your life: reflux is rarely only about acid. This ebook walks you through what actually drives it and the root cause steps you can start today.'
   }
 };
 
