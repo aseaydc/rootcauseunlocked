@@ -456,3 +456,42 @@ details.faq .faq-body p:last-child { margin-bottom: 0; }
   .nav-toggle { display: block; }
   .btn-row .btn { width: 100%; justify-content: center; }
 }
+
+/* Look inside. Real rendered pages from the PDFs, so a buyer can see what is
+   actually in a guide before paying. Images are generated from the shipped PDF,
+   never mocked up, so they cannot drift from the product. */
+.peek-grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.peek {
+  display: block; text-decoration: none; color: inherit; background: var(--white);
+  border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.peek:hover { transform: translateY(-5px); box-shadow: 0 20px 48px rgba(14,14,16,.08); border-color: var(--blue); }
+.peek img { display: block; width: 100%; height: auto; border-bottom: 1px solid var(--line); }
+.peek-cap { padding: 14px 16px; font-size: .82rem; font-weight: 600; line-height: 1.35; }
+.peek-cap span { display: block; font-weight: 400; color: var(--muted); font-size: .76rem; margin-top: 4px; }
+.peek-wide { display: block; max-width: 640px; margin: 26px auto 0; border: 1px solid var(--line);
+  border-radius: 14px; overflow: hidden; background: var(--white); text-decoration: none; color: inherit; }
+.peek-wide img { display: block; width: 100%; height: auto; }
+.peek-wide .peek-cap { border-top: 1px solid var(--line); }
+
+/* Tier cards. Cover art from the shipped PDF plus a plain list of what is in
+   each product, so the ebook/kit/ultimate choice is legible without opening
+   anything. Covers are rendered from the PDF and cannot drift from the file. */
+.tier-grid { display: grid; gap: 26px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); text-align: left; }
+.tier {
+  display: flex; flex-direction: column; background: var(--white);
+  border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+}
+.tier-art { background: var(--paper); padding: 22px 22px 0; }
+.tier-art img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; }
+.tier-stack { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.tier-body { padding: 24px 26px 26px; display: flex; flex-direction: column; flex: 1; }
+.tier-name { font-size: .7rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--blue-ink); }
+.tier-price { font-family: 'Instrument Serif', Georgia, serif; font-size: 2rem; line-height: 1.1; margin: 6px 0 2px; }
+.tier-sub { color: var(--muted); font-size: .84rem; margin-bottom: 16px; }
+.tier ul { list-style: none; padding: 0; margin: 0 0 22px; }
+.tier li { position: relative; padding-left: 22px; margin-bottom: 9px; font-size: .93rem; color: var(--muted); }
+.tier li::before { content: ''; position: absolute; left: 0; top: .55em; width: 9px; height: 2px; background: var(--blue); }
+.tier li strong { color: var(--ink); font-weight: 600; }
+.tier .btn { margin-top: auto; text-align: center; }
