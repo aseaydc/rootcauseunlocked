@@ -793,7 +793,10 @@ const PROGRAM_PAGE_BY_CONDITION = {
   mcs:            'https://rootcauseunlocked.com/unlock-your-mold',
   // Metabolic cluster
   hashimotos:     'https://rootcauseunlocked.com/unlock-your-hashimotos',
-  diabetes:       'https://rootcauseunlocked.com/unlock-your-glp1',
+  // Moved off GLP1 2026-08-22: GLP1 has no Stripe product, so a diabetes lead sent there
+  // could read but never buy. Heart carries 47 insulin and blood-sugar mentions and is on
+  // sale. GLP1 stays reachable from /programs and /shop.
+  diabetes:       'https://rootcauseunlocked.com/unlock-your-heart',
   // Neurological cluster
   neuropathy:     'https://rootcauseunlocked.com/unlock-your-neuropathy',
   // Added 2026-08-21 alongside the 6 programs now on the shop.
@@ -943,7 +946,21 @@ const EBOOK_BY_CONDITION = {
   heavymetals:     { product: 'detox',     title: 'Unlock Your Detox Capacity' },
   adrenal:         { product: 'energy',    title: 'Unlock Your Energy' },
   pcos:            { product: 'hormones',  title: 'Unlock Your Hormones' },
-  lowtestosterone: { product: 'hormones',  title: 'Unlock Your Hormones' }
+  lowtestosterone: { product: 'hormones',  title: 'Unlock Your Hormones' },
+  // Added 2026-08-22 after a lead scored 100 on insomnia and was shown no offer at all.
+  // Each row below was checked against how much that product's own ebook actually covers
+  // the pattern, so none of these is a stretch:
+  //   insomnia -> energy   : 9 mentions of insomnia; the program is fatigue plus unrefreshing sleep
+  //   cfs      -> energy   : 20 mentions of chronic fatigue
+  //   anxdep   -> brain    : 52 mentions of mood, anxiety or depression; the product IS Brain Health and Mood
+  //   nafld    -> heart    : 12 mentions of fatty liver; the shop card names fatty liver outright
+  //   diabetes -> heart    : 47 mentions of insulin or blood sugar. Previously routed to GLP1,
+  //                          which has no Stripe product, so every diabetes lead was unsellable.
+  insomnia:        { product: 'energy',    title: 'Unlock Your Energy' },
+  cfs:             { product: 'energy',    title: 'Unlock Your Energy' },
+  anxdep:          { product: 'brain',     title: 'Unlock Your Brain Health' },
+  nafld:           { product: 'heart',     title: 'Unlock Your Heart Health' },
+  diabetes:        { product: 'heart',     title: 'Unlock Your Heart Health' }
 };
 // Per-ebook card copy: transformation first, then what they have been living with.
 const TRIPWIRE_COPY = {
@@ -1110,7 +1127,7 @@ function doShowResults() {
 
   // Tripwire ebook offer for the top condition. Any failure degrades to no card,
   // never to broken results.
-  try { renderTripwireOffer(scored[0]); } catch (e) { /* card is optional */ }
+  try { renderTripwireOffer(scored); } catch (e) { /* card is optional */ }
 
   // Local progress: save this assessment and render the domain strip + delta card.
   // Any storage failure degrades to the classic results, never to a broken page.
@@ -1133,13 +1150,26 @@ function doShowResults() {
 // ============================================================
 // TRIPWIRE EBOOK OFFER
 // ============================================================
-function renderTripwireOffer(top) {
+function renderTripwireOffer(ranked) {
   const wrap = document.getElementById('tripwire-offer');
   if (!wrap) return;
   wrap.style.display = 'none';
   wrap.innerHTML = '';
-  if (!top) return;
-  const ebook = EBOOK_BY_CONDITION[top.id];
+  if (!ranked) return;
+  // Accepts the whole ranked list. It used to take only the top result, which meant a
+  // lead whose number one pattern had no product was shown nothing at all, even when
+  // their number two and three were both on sale. That happened for real on 2026-08-22:
+  // a lead scored 100 on insomnia and saw no offer while brain and hormones sat unsold.
+  // Walk down the ranking and offer the first pattern that has something behind it.
+  const list = Array.isArray(ranked) ? ranked : [ranked];
+  let top = null, ebook = null, rank = 0;
+  for (let i = 0; i < list.length; i++) {
+    const cand = EBOOK_BY_CONDITION[list[i].id];
+    if (cand && STRIPE_LINKS[cand.product] && TRIPWIRE_COPY[cand.product]) {
+      top = list[i]; ebook = cand; rank = i + 1;
+      break;
+    }
+  }
   if (!ebook) return;
   const link = STRIPE_LINKS[ebook.product];
   const copy = TRIPWIRE_COPY[ebook.product];
@@ -1155,6 +1185,7 @@ function renderTripwireOffer(top) {
   wrap.innerHTML = `
     <div class="tripwire-card">
       <div class="tw-eyebrow">${ebook.title} &middot; Ebook</div>
+      ${rank > 1 ? `<p class="tw-note" style="margin-top:0;margin-bottom:8px">Matched to <strong>${top.name}</strong>, which ranked #${rank} in your results.</p>` : ''}
       <h3>${copy.headline}</h3>
       <p>${copy.body}</p>
       <a class="btn-tripwire" href="${href}" target="_blank" rel="noopener">Get the ebook &middot; Instant download &middot; ${TRIPWIRE_PRICE_TEXT}</a>
