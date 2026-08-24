@@ -821,7 +821,7 @@ const PROGRAM_PAGE_BY_CONDITION = {
   lyme:           'https://rootcauseunlocked.com/unlock-your-lyme',
   // Environmental/Toxicity cluster
   mold:           'https://rootcauseunlocked.com/unlock-your-mold',
-  mcas:           'https://rootcauseunlocked.com/unlock-your-mold',
+  mcas:           'https://rootcauseunlocked.com/unlock-your-mold',  // sales page pending
   mcs:            'https://rootcauseunlocked.com/unlock-your-mold',
   // Metabolic cluster
   hashimotos:     'https://rootcauseunlocked.com/unlock-your-hashimotos',
@@ -940,7 +940,10 @@ const STRIPE_LINKS = {
   postviral: 'https://buy.stripe.com/fZu28rerP1jqg8qcpn9ws0A',
   detox: 'https://buy.stripe.com/4gM6oHdnL6DK8FYdtr9ws0D',
   energy: 'https://buy.stripe.com/8x2fZherP8LSg8qgFD9ws0G',
-  hormones: 'https://buy.stripe.com/dRmbJ11F3fag8FY1KJ9ws0J'
+  hormones: 'https://buy.stripe.com/dRmbJ11F3fag8FY1KJ9ws0J',
+  adhd: 'https://buy.stripe.com/5kQ3cvcjH7HO8FYahf9ws0P',
+  mcas: 'https://buy.stripe.com/00wbJ13Nb7HO5tMfBz9ws0S',
+  mcs: 'https://buy.stripe.com/9B66oHdnLfagcWe60Z9ws0V'
 };
 // Maps CONDITIONS ids to their ebook, in lockstep with PROGRAM_PAGE_BY_CONDITION
 // (Adam, 2026-07-30): High-confidence cluster rows only. Claims-care rows
@@ -975,6 +978,11 @@ const EBOOK_BY_CONDITION = {
   // alzheimer, dementia or cognitive decline, so this is a content match, not
   // a stretch. Card copy stays educational; nothing claims to treat dementia.
   alzheimers:      { product: 'brain',     title: 'Unlock Your Brain Health' },
+  // 2026-08-24: these three shipped as products today. mcas and mcs previously
+  // had no product at all and fell through to whatever else scored.
+  adhd:            { product: 'adhd',      title: 'Unlock Your ADHD' },
+  mcas:            { product: 'mcas',      title: 'Unlock Your Mast Cell Response' },
+  mcs:             { product: 'mcs',       title: 'Unlock Your Chemical Sensitivity' },
   heartdisease:    { product: 'heart',     title: 'Unlock Your Heart Health' },
   cholesterol:     { product: 'heart',     title: 'Unlock Your Heart Health' },
   htn:             { product: 'heart',     title: 'Unlock Your Heart Health' },
@@ -1080,6 +1088,18 @@ const TRIPWIRE_COPY = {
   hormones: {
     headline: 'Imagine feeling like yourself in your own body again.',
     body: 'Your labs read normal and you were told that settles it. This ebook walks you through how hormones are actually regulated, why a normal result does not always answer the question, and what a fuller workup includes.'
+  },
+  adhd: {
+    headline: 'Imagine sitting down to a task and actually staying in it.',
+    body: 'The focus that will not hold, the list you keep rewriting, the sense that everyone else got an instruction manual you missed. This ebook walks you through the physiology behind attention and focus problems and where a root cause workup looks first.'
+  },
+  mcas: {
+    headline: 'Imagine eating, or walking into a room, without bracing for a reaction.',
+    body: 'Foods, smells, weather changes and stress that set something off, with allergy testing that keeps coming back normal. This ebook walks you through what mast cells actually release, which tests separate the patterns, and how to lower the load.'
+  },
+  mcs: {
+    headline: 'Imagine a perfume aisle not costing you the rest of your day.',
+    body: 'Cleaning products, fragrance and new carpet that leave you wiped out, and people who assume you are exaggerating. This ebook walks you through why the reaction is real and measurable, and what actually reduces it.'
   },
   reflux: {
     headline: 'Imagine finishing dinner without doing the math on what it will cost you tonight.',
