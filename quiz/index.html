@@ -340,8 +340,15 @@ body{font-family:'Georgia','Times New Roman',serif;background:var(--warm-white);
 
   <div class="val-msg" id="val-msg"></div>
 
+  <!-- Early exit, added 2026-08-24. The assessment is 438 checkboxes across 8
+       sections, and 45 quiz views had produced exactly 1 completion. Nobody
+       should have to walk all 8 sections before they are allowed to see
+       anything. generateResults() already validates first name plus at least
+       one checked symptom, so it is safe to call from any section. -->
+  <p id="early-hint" style="display:none;text-align:center;font-family:Arial,sans-serif;font-size:0.82rem;color:var(--text-light);margin:14px 0 0;line-height:1.5;"></p>
   <div class="tab-nav-btns">
     <button class="btn-nav btn-prev" id="btn-prev" onclick="prevTab()" style="visibility:hidden">&#8592; Previous</button>
+    <button class="btn-nav btn-generate" id="btn-early" onclick="generateResults()" style="display:none">See My Results Now &#8594;</button>
     <button class="btn-nav btn-next" id="btn-next" onclick="nextTab()">Next Section &#8594;</button>
   </div>
 
@@ -626,6 +633,30 @@ function buildUI() {
 
 function handleCheck(cb) {
   cb.closest('.symptom-label').classList.toggle('checked', cb.checked);
+  updateEarlyExit();
+}
+
+/* Reveals "See My Results Now" once there is enough checked to score.
+   THRESHOLD is deliberately low: the point is that nobody is trapped behind
+   438 checkboxes. The hint is honest that more sections sharpen the match,
+   rather than implying three boxes is a complete picture. Called from
+   handleCheck and from updateNav so the button survives a tab change. */
+const EARLY_EXIT_THRESHOLD = 3;
+function updateEarlyExit() {
+  const btn = document.getElementById('btn-early');
+  const hint = document.getElementById('early-hint');
+  if (!btn || !hint) return;
+  const n = document.querySelectorAll('[id^="chk-"]:checked').length;
+  const onLastTab = currentTab === TOTAL_TABS - 1;
+  if (n >= EARLY_EXIT_THRESHOLD && !onLastTab) {
+    btn.style.display = '';
+    hint.style.display = 'block';
+    hint.innerHTML = '<strong>' + n + ' symptom' + (n === 1 ? '' : 's') + ' selected.</strong> '
+      + 'That is enough to score you now. Working through more sections sharpens the match.';
+  } else {
+    btn.style.display = 'none';
+    hint.style.display = 'none';
+  }
 }
 
 // ============================================================
@@ -670,6 +701,7 @@ function updateNav() {
     next.textContent = 'Next Section \u2192';
     next.className = 'btn-nav btn-next';
   }
+  updateEarlyExit();
 }
 
 // ============================================================
@@ -801,6 +833,7 @@ const PROGRAM_PAGE_BY_CONDITION = {
   neuropathy:     'https://rootcauseunlocked.com/unlock-your-neuropathy',
   // Added 2026-08-21 alongside the 6 programs now on the shop.
   brain:           'https://rootcauseunlocked.com/unlock-your-brain',
+  alzheimers:      'https://rootcauseunlocked.com/unlock-your-brain',
   heartdisease:    'https://rootcauseunlocked.com/unlock-your-heart',
   cholesterol:     'https://rootcauseunlocked.com/unlock-your-heart',
   htn:             'https://rootcauseunlocked.com/unlock-your-heart',
@@ -938,6 +971,10 @@ const EBOOK_BY_CONDITION = {
   // is named for. Judgment rows (cfs, nafld, mcs, adhd, insomnia, anxdep,
   // alzheimers, diabetes, pots) are still left out, same standard as 2026-07-30.
   brain:           { product: 'brain',     title: 'Unlock Your Brain Health' },
+  // Added 2026-08-24 on Adam's call. The Brain ebook carries 39 mentions of
+  // alzheimer, dementia or cognitive decline, so this is a content match, not
+  // a stretch. Card copy stays educational; nothing claims to treat dementia.
+  alzheimers:      { product: 'brain',     title: 'Unlock Your Brain Health' },
   heartdisease:    { product: 'heart',     title: 'Unlock Your Heart Health' },
   cholesterol:     { product: 'heart',     title: 'Unlock Your Heart Health' },
   htn:             { product: 'heart',     title: 'Unlock Your Heart Health' },
