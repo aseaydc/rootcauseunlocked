@@ -999,6 +999,26 @@ const EBOOK_BY_CONDITION = {
   nafld:           { product: 'heart',     title: 'Unlock Your Heart Health' },
   diabetes:        { product: 'heart',     title: 'Unlock Your Heart Health' }
 };
+// ---- Downstream syndromes and their candidate drivers (Adam, 2026-08-24).
+// Some quiz results are SYMPTOM PATTERNS, not root causes. POTS is the clear
+// case: it can sit downstream of post-viral autonomic injury, Lyme, mycotoxin
+// illness or mast cell activation, and offering one fixed product to everyone
+// whose top result is POTS would contradict the entire premise of the
+// assessment.
+//
+// So when a downstream syndrome tops someone's results, we look at THEIR OWN
+// scores for its known drivers and offer the highest scoring one. The order
+// below is the fallback when none of the drivers scored: post-viral first,
+// because it is the only program on the shelf that actually teaches POTS
+// (96 mentions of POTS, dysautonomia, orthostatic or autonomic, against zero
+// in Lyme and zero in Mould as of 2026-08-24) and the best evidenced driver.
+//
+// Driver ids are QUIZ condition ids, not product keys. longcovid and ebv both
+// resolve to the post-viral product via EBOOK_BY_CONDITION.
+const DOWNSTREAM_DRIVERS = {
+  pots: ['longcovid', 'ebv', 'lyme', 'mold', 'mcas']
+};
+
 // Per-ebook card copy: transformation first, then what they have been living with.
 const TRIPWIRE_COPY = {
   candida: {
@@ -1198,7 +1218,25 @@ function renderTripwireOffer(ranked) {
   // their number two and three were both on sale. That happened for real on 2026-08-22:
   // a lead scored 100 on insomnia and saw no offer while brain and hormones sat unsold.
   // Walk down the ranking and offer the first pattern that has something behind it.
-  const list = Array.isArray(ranked) ? ranked : [ranked];
+  let list = Array.isArray(ranked) ? ranked : [ranked];
+
+  // If a downstream syndrome is their top result, reorder so its best-scoring
+  // driver is considered first. Their own ranking decides which driver, so a
+  // POTS-topped person whose Lyme score is high gets Lyme, and one with a
+  // strong post-viral picture gets post-viral. Nothing is dropped: the
+  // untouched ranking still follows behind as the fallthrough.
+  const drivers = list.length ? DOWNSTREAM_DRIVERS[list[0].id] : null;
+  if (drivers) {
+    const scored = list.filter((c) => drivers.indexOf(c.id) !== -1);
+    if (scored.length) {
+      list = scored.concat(list);
+    } else {
+      // None of the drivers scored at all. Fall back to the documented default
+      // in declaration order rather than offering nothing.
+      list = drivers.map((id) => ({ id, name: list[0].name })).concat(list);
+    }
+  }
+
   let top = null, ebook = null, rank = 0;
   for (let i = 0; i < list.length; i++) {
     const cand = EBOOK_BY_CONDITION[list[i].id];
@@ -1222,7 +1260,7 @@ function renderTripwireOffer(ranked) {
   wrap.innerHTML = `
     <div class="tripwire-card">
       <div class="tw-eyebrow">${ebook.title} &middot; Ebook</div>
-      ${rank > 1 ? `<p class="tw-note" style="margin-top:0;margin-bottom:8px">Matched to <strong>${top.name}</strong>, which ranked #${rank} in your results.</p>` : ''}
+      ${rank > 1 ? `<p class="tw-note" style="margin-top:0;margin-bottom:8px">Matched to <strong>${top.name}</strong>, the highest scoring driver in your results.</p>` : ''}
       <h3>${copy.headline}</h3>
       <p>${copy.body}</p>
       <a class="btn-tripwire" href="${href}" target="_blank" rel="noopener">Get the ebook &middot; Instant download &middot; ${TRIPWIRE_PRICE_TEXT}</a>
