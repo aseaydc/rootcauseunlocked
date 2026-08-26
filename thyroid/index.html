@@ -154,37 +154,6 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
     </div>
   </section>
 
-  <section class="screen" id="s-capture">
-    <div class="card">
-      <div class="eyebrow">Last step</div>
-      <h2>Where should your results go?</h2>
-      <p>Your answers are scored on this page. Enter your details to see the full breakdown and get a copy you can take to your clinician.</p>
-      <div class="err" id="cap-err"></div>
-      <div class="field">
-        <label for="cap-name">First name</label>
-        <input type="text" id="cap-name" autocomplete="given-name" placeholder="Your first name">
-      </div>
-      <div class="field">
-        <label for="cap-email">Email</label>
-        <input type="email" id="cap-email" autocomplete="email" placeholder="you@example.com">
-      </div>
-      <div class="field">
-        <label for="cap-phone">Mobile number (optional)</label>
-        <input type="tel" id="cap-phone" autocomplete="tel" placeholder="Optional">
-      </div>
-      <label class="consent-row">
-        <input type="checkbox" id="cap-consent">
-        <span>Email me my results and follow-up education from Root Cause Unlocked. I can unsubscribe at any time.</span>
-      </label>
-      <label class="consent-row">
-        <input type="checkbox" id="cap-sms">
-        <span>Optional: text me too. Message and data rates may apply. Reply STOP to opt out.</span>
-      </label>
-      <button class="btn btn-cta" id="btn-submit">See my results</button>
-      <p class="disclaimer">We do not sell or share your information. Your answers are stored on this device and sent to our email system so we can deliver your results.</p>
-    </div>
-  </section>
-
   <section class="screen" id="s-result">
     <div class="result-head">
       <div class="eyebrow">Your screening result</div>
@@ -204,6 +173,37 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
       <div class="d" id="res-retest"></div>
       <p style="font-family:Arial,sans-serif;font-size:0.87rem;color:var(--text-dark);font-weight:700;margin-bottom:8px;" id="res-retest-note"></p>
       <p class="muted">That number is only useful if you take it again. Retake this screener on that date, alongside a repeat lab panel, and you will have a documented before and after instead of a feeling about whether anything improved. Most people with Hashimoto's are already retesting on roughly this schedule.</p>
+    </div>
+
+    <div id="res-capture">
+      <div class="card">
+        <div class="eyebrow">Optional</div>
+        <h2>Want these results emailed to you?</h2>
+        <p>You already have your results, and you can print them from the bottom of this page without giving us anything. If you would like a copy in your inbox, plus a short series on how to work through the list below in the right order, add your email.</p>
+        <div class="err" id="cap-err"></div>
+        <div class="field">
+          <label for="cap-name">First name</label>
+          <input type="text" id="cap-name" autocomplete="given-name" placeholder="Your first name">
+        </div>
+        <div class="field">
+          <label for="cap-email">Email</label>
+          <input type="email" id="cap-email" autocomplete="email" placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="cap-phone">Mobile number (optional)</label>
+          <input type="tel" id="cap-phone" autocomplete="tel" placeholder="Optional">
+        </div>
+        <label class="consent-row">
+          <input type="checkbox" id="cap-consent">
+          <span>Email me my results and follow-up education from Root Cause Unlocked. I can unsubscribe at any time.</span>
+        </label>
+        <label class="consent-row">
+          <input type="checkbox" id="cap-sms">
+          <span>Optional: text me too. Message and data rates may apply. Reply STOP to opt out.</span>
+        </label>
+        <button class="btn btn-cta" id="btn-submit">Email me my results</button>
+        <p class="disclaimer">This is a public educational tool. It is not part of any medical record, and your answers are not added to your chart. We do not sell or share your information.</p>
+      </div>
     </div>
 
     <div class="card">
@@ -899,6 +899,8 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
 
     var built = buildResults(name);
     var r = built.route;
+    /* buildResults re-reads cap-email, so the Stripe links now carry their
+       address. Do this before the capture card is replaced below. */
 
     saveEntry({
       at: new Date().toISOString(),
@@ -948,8 +950,14 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
       console.warn('Relay intake capture threw (results still shown):', e);
     }
 
-    show('s-result');
-    document.getElementById('progress-strip').style.display = 'none';
+    /* Re-render with their name, and swap the form for a confirmation. They are
+       already looking at their results, so there is nothing to navigate to. */
+    document.getElementById('res-capture').innerHTML =
+      '<div class="card" style="border-color:var(--cta);border-width:2px;">' +
+      '<div class="eyebrow">Sent</div>' +
+      '<h2>On its way' + (name ? ', ' + escapeHtml(name) : '') + '</h2>' +
+      '<p>Check your inbox. If it is not there in a few minutes, look in promotions or spam and drag it across, which also helps the rest arrive.</p>' +
+      '</div>';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -984,7 +992,13 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
       renderSection();
     } else {
       document.getElementById('progress-fill').style.width = '100%';
-      show('s-capture');
+      /* Results are NOT gated behind an email. Gating them was both the thing
+         putting a symptom profile into the mailing system for every visitor,
+         and the same conversion killer the comprehensive quiz already fixed on
+         2026-08-24 (45 views, 1 completion). Show the results; ask after. */
+      buildResults('');
+      show('s-result');
+      document.getElementById('progress-strip').style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
