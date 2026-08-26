@@ -929,17 +929,24 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
           source: SOURCE,
           score: built.burden,
           tier: r.rec,
+          /* DATA MINIMISATION, 2026-08-26. Only what the emails actually merge.
+             Deliberately NOT sent: flagged_pathways and primary_pathway (they
+             name suspected conditions), medicated_symptomatic (states someone is
+             on thyroid medication and it is not working), gluten_free_untested,
+             driver_score, wrong_lane and call_first.
+
+             Those four aggregates are a severity number and a count. The dropped
+             fields were a diagnosis-shaped profile, and Relay's tenant is
+             'standard' with no BAA behind it. The detailed result still renders
+             in full on the page, is saved to the visitor's own browser, and is
+             printable; it simply is not copied to the mailing system.
+
+             If per-pathway nurture branching is ever built, that needs a
+             different home than this payload. */
           merge_fields: {
             symptom_burden: built.burden,
             symptom_band: (built.burden >= 17 ? 'Severe' : built.burden >= 10 ? 'Moderate' : built.burden >= 4 ? 'Mild' : 'Minimal'),
-            driver_score: built.total,
-            wrong_lane: wrongLane(),
-            flagged_pathways: r.flags.join(','),
             flagged_count: r.flags.length,
-            primary_pathway: r.flags.length ? r.flags[0] : 'none',
-            call_first: r.callFirst,
-            medicated_symptomatic: medicatedSymptomatic(),
-            gluten_free_untested: glutenFreeUntested(),
             retest_due: built.retest
           }
         })
