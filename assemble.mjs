@@ -7,11 +7,17 @@
    script-maintained), the canonical MSK pain assessment is the workspace
    root msk-assessment.html, the canonical Root Tracker (daily check-ins,
    trends, assessment deltas, retake planner, provider report) is the
-   workspace root rcu-tracker.html, and the canonical thyroid deep-dive
-   screener is the workspace root rcu-thyroid.html. They are deliberately NOT
-   duplicated here by hand. This script copies them to RCU-Site/quiz/,
-   RCU-Site/msk/, RCU-Site/tracker/ and RCU-Site/thyroid/ so the deployed site
-   serves them at /quiz, /msk, /tracker, and /thyroid.
+   workspace root rcu-tracker.html, the canonical thyroid deep-dive screener
+   is the workspace root rcu-thyroid.html, and the canonical low back and
+   sciatica deep-dive screener is the workspace root rcu-lowback.html. They
+   are deliberately NOT duplicated here by hand. This script copies them to
+   RCU-Site/quiz/, RCU-Site/msk/, RCU-Site/tracker/, RCU-Site/thyroid/ and
+   RCU-Site/lowback/ so the deployed site serves them at /quiz, /msk,
+   /tracker, /thyroid and /lowback.
+
+   Note on /msk vs /lowback: they are different tools, not duplicates. /msk is
+   the four-region triage; /lowback is the deep dive for the one marketed lane,
+   per the tiered quiz architecture. Do not collapse them.
 
    That keeps exactly one canonical copy of each assessment/tool. Never
    hand-edit the generated copies (2026-08-04: tracker/index.html had drifted
@@ -30,7 +36,8 @@ const COPIES = [
   { src: 'index.html', dest: 'quiz' },
   { src: 'msk-assessment.html', dest: 'msk' },
   { src: 'rcu-tracker.html', dest: 'tracker' },
-  { src: 'rcu-thyroid.html', dest: 'thyroid' }
+  { src: 'rcu-thyroid.html', dest: 'thyroid' },
+  { src: 'rcu-lowback.html', dest: 'lowback' }
 ];
 
 /* SAFETY GUARD, added 2026-08-26.
