@@ -4,7 +4,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Root Tracker | Root Cause Unlocked</title>
+<title>Free Symptom Tracker | Root Cause Unlocked</title>
+<meta name="description" content="Track symptoms, daily function and changes over time with the free Root Tracker, then use the summary to prepare questions for your clinician.">
+<link rel="canonical" href="https://rootcauseunlocked.com/tracker/">
+<meta property="og:title" content="Free Symptom Tracker | Root Cause Unlocked">
+<meta property="og:description" content="Track symptoms, daily function and changes over time with the free Root Tracker, then use the summary to prepare questions for your clinician.">
+<meta property="og:image" content="https://rootcauseunlocked.com/assets/logo-lockup.png">
+<meta property="og:url" content="https://rootcauseunlocked.com/tracker/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free Symptom Tracker | Root Cause Unlocked">
+<meta name="twitter:description" content="Track symptoms, daily function and changes over time with the free Root Tracker, then use the summary to prepare questions for your clinician.">
+<meta name="twitter:image" content="https://rootcauseunlocked.com/assets/logo-lockup.png">
 <link rel="icon" href="data:,">
 <style>
 :root {
@@ -172,6 +183,22 @@ section.tab.active{display:block;}
   @page{margin:14mm;}
 }
 </style>
+<script type="application/ld+json" data-rcu-seo="true">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://rootcauseunlocked.com/tracker/#webpage",
+  "url": "https://rootcauseunlocked.com/tracker/",
+  "name": "Free Symptom Tracker | Root Cause Unlocked",
+  "description": "Track symptoms, daily function and changes over time with the free Root Tracker, then use the summary to prepare questions for your clinician.",
+  "isPartOf": {
+    "@id": "https://rootcauseunlocked.com/#website"
+  },
+  "publisher": {
+    "@id": "https://rootcauseunlocked.com/#organization"
+  }
+}
+</script>
 </head>
 <body>
 
@@ -237,7 +264,7 @@ section.tab.active{display:block;}
 </div>
 
 <footer class="no-print" style="max-width:920px;margin:6px auto 0;padding:18px 16px 40px;text-align:center;border-top:1px solid var(--border);">
-  <p class="muted"><a href="/privacy" style="color:var(--text-light);text-decoration:underline;">Privacy Policy</a> &middot; <a href="/terms" style="color:var(--text-light);text-decoration:underline;">Terms of Use</a> &middot; <a href="/contact" style="color:var(--text-light);text-decoration:underline;">Contact</a></p>
+  <p class="muted"><a href="/privacy/" style="color:var(--text-light);text-decoration:underline;">Privacy Policy</a> &middot; <a href="/terms/" style="color:var(--text-light);text-decoration:underline;">Terms of Use</a> &middot; <a href="/contact/" style="color:var(--text-light);text-decoration:underline;">Contact</a></p>
 </footer>
 
 <div id="toast"></div>
@@ -755,7 +782,7 @@ function retakeBannerHTML(list){
   if(!targetPassed && !(latestAge !== null && latestAge > 30)) return '';
   const why = targetPassed ? 'Your planned retake date is here.' : 'Your last assessment was '+latestAge+' days ago.';
   return '<div class="retake-banner"><p><strong>'+why+'</strong> A fresh assessment shows what changed.</p>'+
-    '<a class="btn cta" href="/quiz">Retake the assessment</a></div>';
+    '<a class="btn cta" href="/quiz/">Retake the assessment</a></div>';
 }
 function retakePlannerHTML(){
   const prefs = currentPrefs();
@@ -948,7 +975,7 @@ function renderShare(){
 /* ===== SECTION F: demo mode wiring + empty states (build step f) ===== */
 function emptyStateHTML(kind, msg){
   const primary = kind === 'assess'
-    ? '<a class="btn cta" href="/quiz">Take the assessment first</a>'
+    ? '<a class="btn cta" href="/quiz/">Take the assessment first</a>'
     : '<button class="btn cta" data-act="go-today">Go to Today</button>';
   return '<div class="empty-card"><p>'+msg+'</p>'+
     '<div class="empty-btns">'+primary+
