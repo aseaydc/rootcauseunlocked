@@ -135,6 +135,11 @@ section { padding: 110px 0; position: relative; }
 .center .lead { margin-left: auto; margin-right: auto; }
 .lead { font-size: clamp(1.1rem, 1.7vw, 1.32rem); color: var(--body); max-width: 58ch; line-height: 1.66; }
 .hero-note { font-size: .86rem; color: var(--muted); margin-top: 22px; }
+.hero-note a, .content-byline a { color: var(--blue-deep); font-weight: 700; }
+.content-byline {
+  margin: 0 0 18px; color: var(--muted); font-size: .84rem;
+  letter-spacing: .015em;
+}
 
 /* hero with layered glows */
 .hero { padding: 120px 0 96px; overflow: hidden; }
@@ -417,6 +422,9 @@ details.faq .faq-body p:last-child { margin-bottom: 0; }
 }
 .footer-bottom p { margin-bottom: .7em; }
 .disclaimer { font-size: .85rem; color: var(--muted); }
+.source-list { padding-left: 1.25rem; margin: 24px 0 0; }
+.source-list li { margin-bottom: 12px; }
+.source-list a { color: var(--blue-deep); text-underline-offset: 3px; }
 
 /* ---------- scroll reveal ---------- */
 .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s cubic-bezier(.2,.6,.2,1), transform .8s cubic-bezier(.2,.6,.2,1); }
