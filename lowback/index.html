@@ -315,9 +315,23 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
      but no nurture email sends.
 
      It deliberately does NOT reuse msk_quiz_nurture. That sequence
-     triggers on 'quiz_completed:msk', is written for the four-region
-     triage, fires day 0/2/3/3/3 (three emails the same day, almost
-     certainly a bug) and has no retest step.
+     triggers on 'quiz_completed:msk' and is written for the four-region
+     triage rather than for this screener.
+
+     CORRECTION 2026-09-06: an earlier version of this note claimed
+     msk_quiz_nurture "fires day 0/2/3/3/3, three emails the same day,
+     almost certainly a bug". That was wrong. delay_days is the GAP
+     since the previous send, not a day number counted from enrollment
+     (see Relay/supabase/functions/_shared/sending.ts, which schedules
+     the next step at Date.now() + delay_days). So 0/2/3/3/3 actually
+     lands on days 0, 2, 5, 8 and 11, which is properly spaced. The
+     same misreading is baked into this seed's own _note, and into the
+     seed's delay_days values, which were authored as absolute days and
+     therefore need converting to gaps before registration.
+
+     The "no retest step" half of the old note WAS true. A retest step
+     was added to msk_quiz_nurture on 2026-09-06 and now lands day 42,
+     matching RETEST_DAYS below.
   ───────────────────────────────────────────────────────────── */
   var RELAY_INTAKE_ENDPOINT = 'https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/intake';
   var RELAY_INTAKE_KEY = '97TfHjb8duWiZayVd6dzVnrt';
