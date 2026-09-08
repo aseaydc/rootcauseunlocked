@@ -11,3 +11,9 @@
 # macOS and Windows folder metadata.
 .DS_Store
 Thumbs.db
+
+# Full-resolution source photography. The originals are multi-megabyte camera
+# files and this repo is the live site, so committing one bloats the history
+# that GitHub Pages has to carry. Keep the source in the folder, ship only the
+# web-sized derivative in assets/ (adam-seay.jpg is the 512px crop of this one).
+Headshot Small.jpg
