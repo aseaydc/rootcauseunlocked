@@ -54,9 +54,13 @@ const COPIES = [
    source has genuinely been reconciled. */
 const FORCE = process.argv.includes('--force');
 let skipped = 0;
+const onlyArg = process.argv.find(arg => arg.startsWith('--only='));
+const selected = onlyArg ? onlyArg.slice(7).split(',') : null;
+if (selected && selected.some(name => !COPIES.some(c => c.dest === name))) throw new Error('Unknown assessment route in --only');
+const buildCopies = selected ? COPIES.filter(c => selected.includes(c.dest)) : COPIES;
 
 try {
-  for (const c of COPIES) {
+  for (const c of buildCopies) {
     const srcPath = join(WORKSPACE, c.src);
     const destPath = join(SITE, c.dest, 'index.html');
 
