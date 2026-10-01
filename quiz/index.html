@@ -1174,6 +1174,14 @@ function submitEmailGate() {
   const scored = scoreAll();
   const top = scored[0];
   const concern = document.getElementById('concern').value.trim();
+  // The guide the nurture emails offer: the same one the results card shows,
+  // or the shop when nothing matched. Never blank, because an email template
+  // cannot branch and an empty merge field would print a dead link.
+  let offer = null;
+  try { offer = pickOffer(scored); } catch (e) { offer = null; }
+  const offerFields = offer
+    ? { offer_title: offer.ebook.title, offer_url: offerPageUrl(offer.ebook.product) }
+    : { offer_title: 'the Root Cause Unlocked guides', offer_url: 'https://rootcauseunlocked.com/shop/' };
   fetch(RELAY_INTAKE_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1184,7 +1192,7 @@ function submitEmailGate() {
       merge_fields: Object.assign({
         first_name: fn, top_condition: top.name, top_condition_id: top.id, top_score: top.pct,
         top3: scored.slice(0, 3).map(function (c) { return c.name; }).join(', '), concern: concern
-      }, rcuGetAttribution())
+      }, offerFields, rcuGetAttribution())
     })
   }).catch(function () {}).finally(function () {
     document.getElementById('email-gate').style.display = 'none';
@@ -1285,7 +1293,38 @@ function renderTripwireOffer(ranked) {
   if (!wrap) return;
   wrap.style.display = 'none';
   wrap.innerHTML = '';
-  if (!ranked) return;
+  const picked = pickOffer(ranked);
+  if (!picked) return;
+  const { top, ebook, rank } = picked;
+  const link = STRIPE_LINKS[ebook.product];
+  const copy = TRIPWIRE_COPY[ebook.product];
+  const emailEl = document.getElementById('gate-email');
+  const email = emailEl ? emailEl.value.trim() : '';
+  const href = link + '?prefilled_email=' + encodeURIComponent(email);
+  wrap.innerHTML = `
+    <div class="tripwire-card">
+      <div class="tw-eyebrow">${ebook.title} &middot; Ebook</div>
+      ${rank > 1 ? `<p class="tw-note" style="margin-top:0;margin-bottom:8px">Matched to <strong>${top.name}</strong>, the highest scoring driver in your results.</p>` : ''}
+      <h3>${copy.headline}</h3>
+      <p>${copy.body}</p>
+      <a class="btn-tripwire" href="${href}" target="_blank" rel="noopener">Get the ebook &middot; Instant download &middot; ${TRIPWIRE_PRICE_TEXT}</a>
+      <p class="tw-note">Want the lab, diet and supplement guides too? <a href="/shop/" target="_blank" rel="noopener">See all three tiers</a>.</p>
+      <p class="tw-note">Instant digital download. An educational guide, not medical advice or a substitute for care.</p>
+    </div>`;
+  wrap.style.display = 'block';
+}
+
+// The guides page for an offer. Fibromyalgia's lives at /fibromyalgia/, every
+// other product at /unlock-your-<product>/.
+function offerPageUrl(product) {
+  return 'https://rootcauseunlocked.com/' + (product === 'fibromyalgia' ? 'fibromyalgia' : 'unlock-your-' + product) + '/';
+}
+
+// Which ebook this person should be offered, or null. Shared by the results
+// card and the email capture (2026-10-01), so the nurture emails name the same
+// guide the results page showed.
+function pickOffer(ranked) {
+  if (!ranked) return null;
   // Accepts the whole ranked list. It used to take only the top result, which meant a
   // lead whose number one pattern had no product was shown nothing at all, even when
   // their number two and three were both on sale. That happened for real on 2026-08-22:
@@ -1318,29 +1357,15 @@ function renderTripwireOffer(ranked) {
       break;
     }
   }
-  if (!ebook) return;
+  if (!ebook) return null;
   const link = STRIPE_LINKS[ebook.product];
-  const copy = TRIPWIRE_COPY[ebook.product];
-  if (!link || !copy) return;
+  if (!link || !TRIPWIRE_COPY[ebook.product]) return null;
   // The STRIPE_LINKS placeholders above are truthy strings, so the !link guard
   // alone still rendered a live "Get the ebook" button pointing at a dead
   // checkout URL. Suppress the whole card until a real Payment Link is pasted
   // in. Results and the booking CTA are unaffected either way.
-  if (link.indexOf('PLACEHOLDER') !== -1) return;
-  const emailEl = document.getElementById('gate-email');
-  const email = emailEl ? emailEl.value.trim() : '';
-  const href = link + '?prefilled_email=' + encodeURIComponent(email);
-  wrap.innerHTML = `
-    <div class="tripwire-card">
-      <div class="tw-eyebrow">${ebook.title} &middot; Ebook</div>
-      ${rank > 1 ? `<p class="tw-note" style="margin-top:0;margin-bottom:8px">Matched to <strong>${top.name}</strong>, the highest scoring driver in your results.</p>` : ''}
-      <h3>${copy.headline}</h3>
-      <p>${copy.body}</p>
-      <a class="btn-tripwire" href="${href}" target="_blank" rel="noopener">Get the ebook &middot; Instant download &middot; ${TRIPWIRE_PRICE_TEXT}</a>
-      <p class="tw-note">Want the lab, diet and supplement guides too? <a href="/shop/" target="_blank" rel="noopener">See all three tiers</a>.</p>
-      <p class="tw-note">Instant digital download. An educational guide, not medical advice or a substitute for care.</p>
-    </div>`;
-  wrap.style.display = 'block';
+  if (link.indexOf('PLACEHOLDER') !== -1) return null;
+  return { top, ebook, rank };
 }
 
 // ============================================================
