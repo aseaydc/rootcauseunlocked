@@ -1,0 +1,98 @@
+/* Article pages under /learn/ and the local landing page.
+   Layered on styles.css + corporate.css; uses their tokens only.
+   Generated pages load this; nothing else on the site does. */
+
+.article-hero { padding: 84px 0 40px; }
+.article-hero h1 { font-size: clamp(2.3rem, 5.4vw, 4rem); line-height: 1.04; max-width: 17em; }
+.article-hero .lead { font-size: 1.16rem; max-width: 40em; }
+.article-meta { color: var(--muted); font-size: .86rem; margin: 0 0 22px; }
+.article-meta a { color: var(--blue-deep); font-weight: 700; }
+
+.article-body { padding: 8px 0 40px; }
+.article-body h2 { font-size: clamp(1.75rem, 3.4vw, 2.45rem); line-height: 1.1; margin: 1.6em 0 .5em; }
+.article-body h3 { margin-top: 1.5em; }
+.article-body ul:not(.checks):not(.reco) { padding-left: 1.2rem; margin: 0 0 1.2em; }
+.article-body li { margin-bottom: .45em; }
+/* :not(.btn) matters: a bare `a` color here outranks .btn's white text and
+   makes buttons unreadable (same bug as the 2026-07-26 nav fix). */
+.article-body a:not(.btn):not(.card) { color: var(--blue-deep); text-underline-offset: 3px; }
+.article-body .checks li, .article-body .reco li { padding-top: 16px; padding-bottom: 16px; }
+.article-body .checks li::before { top: 22px; }
+.article-body .reco li::before { top: 26px; }
+.article-body sup a { text-decoration: none; font-weight: 700; font-size: .78em; }
+
+.answer {
+  background: var(--white); border: 1px solid var(--line); border-radius: 20px;
+  padding: 26px 28px; margin: 0 0 8px;
+}
+.answer .label { margin-bottom: 10px; }
+.answer p:last-child { margin-bottom: 0; }
+
+.warn {
+  border: 1px solid #E3C7C2; background: #FBF1EF; border-radius: 16px;
+  padding: 20px 24px; margin: 28px 0; color: #4A2622;
+}
+.warn strong { color: #5C1F17; }
+.warn p:last-child { margin-bottom: 0; }
+
+/* inline guide box: the ebook leads, per Adam 2026-10-02 */
+.guide-box {
+  display: grid; grid-template-columns: 132px 1fr; gap: 26px; align-items: start;
+  background: var(--white); border: 1px solid var(--line); border-radius: 20px;
+  padding: 26px; margin: 40px 0;
+}
+.guide-box.no-art { grid-template-columns: 1fr; }
+.guide-box img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; display: block; }
+.guide-box h3 { font-size: 1.3rem; margin-bottom: .3em; }
+.guide-box p { margin-bottom: .8em; }
+.guide-box .tier-name { display: block; margin-bottom: 6px; }
+.guide-box .more { font-size: .9rem; color: var(--muted); margin: 12px 0 0; }
+.guide-box .more a { color: var(--blue-deep); font-weight: 600; }
+
+/* end of article: three ways in, guides first */
+.start-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 32px; }
+.start-card {
+  background: var(--white); border: 1px solid var(--line); border-radius: 20px;
+  padding: 26px 24px; display: flex; flex-direction: column;
+}
+.start-card .tier-name { margin-bottom: 8px; display: block; }
+.start-card h3 { font-size: 1.2rem; }
+.start-card p { font-size: .96rem; flex: 1; }
+.start-card .btn { align-self: flex-start; }
+.start-card.primary { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.start-card .more { font-size: .86rem; color: var(--muted); margin: 12px 0 0; flex: 0; }
+.start-card .more a { color: var(--blue-deep); font-weight: 600; }
+
+.faq details { border-bottom: 1px solid var(--line); padding: 16px 0; }
+.faq details:first-of-type { border-top: 1px solid var(--line); }
+.faq summary { cursor: pointer; font-weight: 600; color: var(--ink); list-style: none; padding-right: 28px; position: relative; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; position: absolute; right: 4px; top: -2px; font-size: 1.3rem; color: var(--blue-ink); }
+.faq details[open] summary::after { content: '\2212'; }
+.faq details p { margin: 12px 0 0; }
+
+.refs { font-size: .9rem; color: var(--muted); }
+.refs h2 { font-size: 1.6rem; }
+
+.local-card { background: var(--white); border: 1px solid var(--line); border-radius: 20px; padding: 26px 28px; }
+.local-card dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0; }
+.local-card dt { font-weight: 600; color: var(--ink); }
+.local-card dd { margin: 0; }
+.local-card a { color: var(--blue-deep); }
+
+.learn-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px; }
+.learn-list .card { display: flex; flex-direction: column; text-decoration: none; }
+.learn-list .card p { flex: 1; }
+.learn-list .card .go { color: var(--blue-deep); font-weight: 600; font-size: .92rem; }
+
+@media (max-width: 860px) {
+  .start-grid { grid-template-columns: 1fr; }
+  .learn-list { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .article-hero { padding: 56px 0 28px; }
+  .guide-box { grid-template-columns: 1fr; }
+  .guide-box img { max-width: 150px; }
+  .local-card dl { grid-template-columns: 1fr; }
+  .local-card dt { margin-top: 8px; }
+}
