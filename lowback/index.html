@@ -118,6 +118,17 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
 .call-box h3{margin-top:0;color:var(--cta);}
 .retest-box{background:var(--primary-pale);border:1.5px solid var(--border);border-radius:10px;padding:17px 19px;margin-bottom:18px;}
 .retest-box .d{font-size:1.25rem;font-weight:700;color:var(--primary);margin:5px 0 7px;}
+/* product tiers, rendered by TIERS (commerce on 2026-10-05) */
+#res-tiers{display:grid;gap:12px;margin-top:16px;}
+.tier-card{border:1.5px solid var(--border);border-radius:10px;padding:15px 17px;background:#fff;}
+.tier-card.rec{border:2px solid var(--primary);background:var(--warm-white);}
+.tier-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+.tier-name{font-family:Arial,sans-serif;font-weight:700;color:var(--text-dark);font-size:0.95rem;}
+.rec-badge{font-family:Arial,sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;background:var(--primary);color:#fff;border-radius:20px;padding:3px 10px;white-space:nowrap;}
+.tier-desc{font-family:Arial,sans-serif;font-size:0.86rem;color:var(--text-mid);line-height:1.6;margin-bottom:8px;}
+.tier-price{font-weight:700;color:var(--text-dark);font-size:1.15rem;margin-bottom:10px;}
+.btn-buy{display:inline-block;background:var(--primary);color:#fff;font-family:Arial,sans-serif;font-weight:700;font-size:0.9rem;text-decoration:none;border-radius:8px;padding:10px 20px;}
+.btn-buy:hover{background:var(--primary-mid);}
 .disclaimer{font-family:Arial,sans-serif;font-size:0.77rem;color:var(--text-light);line-height:1.65;margin-top:14px;border-top:1px solid var(--primary-pale);padding-top:12px;}
 @media(max-width:560px){.header-inner{padding:14px 16px;}.card{padding:18px 16px;}.result-head{padding:19px 16px;}.danger-box{padding:18px 16px;}}
 @media print{.site-header,.progress-strip,.nav-row{display:none;}.card,.result-head,.danger-box{box-shadow:none;break-inside:avoid;}}
@@ -352,20 +363,32 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
   /* ─────────────────────────────────────────────────────────────
      COMMERCE
 
-     There are currently NO musculoskeletal products in Stripe. The shop
-     carries 20 functional medicine programs and zero MSK, which is why
-     RCU-Site/msk/index.html has no Stripe links either. The Low Back Pain
-     and Sciatica ebooks and the Low Back and Hip Recovery Guide are written
-     and citation audited but are not sellable.
+     COMMERCE ON, 2026-10-05 (Adam: "GO"). The MSK Stripe products were
+     created 2026-09-06 (workspace commit 527fbbe) with delivery sequences
+     and PDFs already wired, but this list stayed empty, so the screener
+     sold nothing. URLs below are copied from
+     Root Health Ops/rcu-commerce/stripe-links.json (msk_lowback_guide,
+     msk_sciatica_guide, msk_lowback_recovery, msk_lowback_both); if a link
+     changes there, change it here too. Prices are the real Stripe prices.
 
-     So this screener is call first, with no prices, which also matches the
-     revenue doctrine: optimise for booked discovery calls, not units sold.
-
-     TO TURN COMMERCE ON: add entries to TIERS below and they render
-     automatically, with `rec` from route() pre-selecting one. Do not invent
-     prices here. Create the Stripe products first, then paste the real links.
+     The discovery call still leads for callFirst results. `rec` from route()
+     pre-selects one tier and all tiers stay visible. A leg-dominant result
+     whose rec is 'ebook' highlights the sciatica guide instead (see render).
   ───────────────────────────────────────────────────────────── */
-  var TIERS = [];
+  var TIERS = [
+    { id: 'ebook', name: "The Complete Patient's Guide to Low Back Pain", price: '$27',
+      url: 'https://buy.stripe.com/6oU7sL1F3d283lE1KJ9ws0Y',
+      desc: 'What is going on, what your MRI does and does not mean, the red flags, a staged movement plan, and an honest grade of every therapy and supplement.' },
+    { id: 'sciatica', name: "The Complete Patient's Guide to Sciatica", price: '$27',
+      url: 'https://buy.stripe.com/9B65kDbfDbY44pIdtr9ws0Z',
+      desc: 'For pain, numbness or tingling that runs down the leg: what causes it, how recovery usually goes, nerve glides and targeted exercises, and the supplement evidence.' },
+    { id: 'kit', name: 'The Low Back and Hip Recovery Guide', price: '$47',
+      url: 'https://buy.stripe.com/6oU5kD4Rfd284pI1KJ9ws18',
+      desc: 'The in-clinic tissue prep protocols, the movement evidence, and the honest supplement picture for low back pain, sciatica and hip pain.' },
+    { id: 'ultimate', name: 'Low Back and Hip, the Complete Set', price: '$67',
+      url: 'https://buy.stripe.com/5kQfZh0AZaU0aO62ON9ws1b',
+      desc: 'The low back, sciatica and hip guides plus the Recovery Guide, together in one PDF.' }
+  ];
 
   /* ─────────────────────────────────────────────────────────────
      SECTIONS
@@ -693,8 +716,8 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
   /* ---------- routing ----------
      Score never picks a price tier on its own. It picks which tier would be
      pre-selected (when products exist) and how hard the discovery call is
-     pushed. All tiers are always visible. Right now TIERS is empty, so this
-     only governs the call. */
+     pushed. All tiers are always visible. TIERS was filled 2026-10-05, so rec
+     now also picks which product card is highlighted. */
   function route() {
     var drivers = flaggedDrivers();
     var fn = functionScore();
@@ -1001,8 +1024,9 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
 
     /* Products render only when TIERS is populated. See the COMMERCE note. */
     var tiersHtml = '';
+    var recId = (r.rec === 'ebook' && r.dom === 'leg') ? 'sciatica' : r.rec;
     TIERS.forEach(function (t) {
-      var isRec = t.id === r.rec;
+      var isRec = t.id === recId;
       tiersHtml += '<div class="tier-card' + (isRec ? ' rec' : '') + '">' +
         '<div class="tier-top"><span class="tier-name">' + escapeHtml(t.name) + '</span>' +
         (isRec ? '<span class="rec-badge">Best fit for you</span>' : '') + '</div>' +
