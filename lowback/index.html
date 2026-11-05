@@ -149,6 +149,7 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
   }
 }
 </script>
+<script src="/assets/dr-seay-send.js"></script>
 </head>
 <body>
 
@@ -211,6 +212,8 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
       <p class="big">Go to an emergency department, or contact your physician today. Do not wait for an appointment, and do not wait to see whether it settles overnight.</p>
       <p>Most of the time these questions turn out to be nothing. They are asked because the small number of times they are something, the timing genuinely matters. Being checked and told you are fine is a good outcome.</p>
     </div>
+    <!-- Send to Dr. Seay (assets/dr-seay-send.js). Empty and hidden until the sender is configured. -->
+    <div id="dr-seay-send-urgent"></div>
     <div class="card">
       <h2>What this was, and was not</h2>
       <p>This screener does not diagnose anything and cannot tell you what is happening. It asks a short set of questions that clinicians are trained to treat as urgent regardless of how likely they are. That is all this screen means.</p>
@@ -270,10 +273,14 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
           <input type="checkbox" id="cap-sms">
           <span>Optional: text me too. Message and data rates may apply. Reply STOP to opt out.</span>
         </label>
+        <div id="dr-seay-gate-notice"></div>
         <button class="btn btn-cta" id="btn-submit">Email me my results</button>
-        <p class="disclaimer">This is a public educational tool. It is not part of any medical record, and your answers are not added to your chart. We do not sell or share your information.</p>
+        <p class="disclaimer" id="cap-disclaimer">This is a public educational tool. It is not part of any medical record, and your answers are not added to your chart. We do not sell or share your information.</p>
       </div>
     </div>
+
+    <!-- Send to Dr. Seay (assets/dr-seay-send.js). Empty and hidden until the sender is configured. -->
+    <div id="dr-seay-send"></div>
 
     <div class="card">
       <h2>Your plan, in order</h2>
@@ -790,6 +797,59 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
     document.getElementById('progress-strip').style.display = 'none';
     show('s-urgent');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    /* Send to Dr. Seay. There is no name or email yet at this point, so the card asks
+       for both, and it says plainly that sending is not a substitute for being seen. */
+    try {
+      if (window.DrSeaySend) {
+        DrSeaySend.mount(document.getElementById('dr-seay-send-urgent'), {
+          quiz: 'Low back screener (stopped at warning signs)',
+          cardClass: 'card',
+          btnClass: 'btn btn-cta',
+          headTag: 'h2',
+          askIdentity: true,
+          note: 'Sending this does not replace being seen today. Dr. Seay may not read it right away.',
+          fallback: 'or use Print this page below.',
+          collect: function () {
+            return { results: DrSeaySend.textOf(['#s-urgent .danger-box']) };
+          }
+        });
+      }
+    } catch (e) { /* optional */ }
+  }
+
+  /* Send to Dr. Seay for the full result. Before the email form is used, the card asks
+     for a name and email itself (low back shows results without one). Once the form is
+     submitted it already has them, so a ?patient=1 link then sends automatically. */
+  function mountDrSeay(captured) {
+    if (!window.DrSeaySend) return;
+    /* submit() replaces the form, so after capture its values arrive in `captured`
+       instead of being read from inputs that no longer exist. */
+    function val(key) {
+      if (captured) return captured[key] || '';
+      var el = document.getElementById('cap-' + key);
+      return el ? (el.value || '').trim() : '';
+    }
+    DrSeaySend.mount(document.getElementById('dr-seay-send'), {
+      quiz: 'Low back screener',
+      cardClass: 'card',
+      btnClass: 'btn btn-cta',
+      headTag: 'h2',
+      askIdentity: !captured,
+      prefill: function () { return { name: val('name'), email: val('email') }; },
+      fallback: 'or use Print or save as PDF at the bottom of this page.',
+      collect: function () {
+        return {
+          name: val('name'),
+          email: val('email'),
+          phone: val('phone'),
+          results: DrSeaySend.textOf([
+            '#s-result .result-head', '#res-alerts', '#s-result .retest-box',
+            document.getElementById('res-steps').closest('.card'), '#res-stopdoing-card'
+          ])
+        };
+      }
+    });
   }
 
   /* ---------- results ---------- */
@@ -1068,6 +1128,7 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
 
     var built = buildResults(name);
     var r = built.route;
+    funnelPing('emailed');
 
     saveEntry({
       at: new Date().toISOString(),
@@ -1130,6 +1191,8 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
       '<p>Check your inbox. If it is not there in a few minutes, look in promotions or spam and drag it across, which also helps the rest arrive.</p>' +
       '</div>';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    try { mountDrSeay({ name: name, email: email, phone: phone }); } catch (e) { /* optional */ }
   }
 
   /* ---------- helpers ---------- */
@@ -1150,9 +1213,34 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
       .replace(/'/g, '&#39;');
   }
 
+  /* Funnel step pings (added 2026-11-04), same as /thyroid: path /_funnel/lowback/<step>
+     in Relay's pageview table, so started vs finished vs urgent vs emailed can be
+     counted. Each step fires once per page load. No personal data, skips local. */
+  var funnelSent = {};
+  function funnelPing(step) {
+    try {
+      if (funnelSent[step]) return;
+      funnelSent[step] = true;
+      if (window.location.protocol.indexOf('http') !== 0) return;
+      if (/^(localhost|127\.|192\.168\.)/.test(window.location.hostname)) return;
+      fetch('https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({
+          intake_key: RELAY_INTAKE_KEY,
+          path: '/_funnel/lowback/' + step,
+          search: window.location.search.slice(0, 300),
+          referrer: (document.referrer || '').slice(0, 300)
+        }),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) { /* tracking must never break the page */ }
+  }
+
   /* ---------- events ---------- */
 
   document.getElementById('btn-start').addEventListener('click', function () {
+    funnelPing('started');
     show('s-quiz');
     document.getElementById('progress-strip').style.display = 'block';
     renderSection();
@@ -1164,7 +1252,7 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
     /* The sieve gates. Any triggered red flag ends the quiz here. */
     if (sec.sieve) {
       var hits = sieveFlags();
-      if (hits.length) { showUrgent(hits); return; }
+      if (hits.length) { funnelPing('urgent'); showUrgent(hits); return; }
     }
 
     if (state.secIndex < SECTIONS.length - 1) {
@@ -1172,9 +1260,11 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
       renderSection();
     } else {
       buildResults('');
+      funnelPing('finished');
       document.getElementById('progress-strip').style.display = 'none';
       show('s-result');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      try { mountDrSeay(null); } catch (e) { /* optional */ }
     }
   });
 
@@ -1187,6 +1277,14 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
   document.getElementById('btn-restart').addEventListener('click', function () { window.location.reload(); });
   document.getElementById('btn-urgent-restart').addEventListener('click', function () { window.location.reload(); });
   document.getElementById('btn-urgent-print').addEventListener('click', function () { window.print(); });
+
+  /* On a Dr. Seay patient link, say up front that the results go to him, and drop the
+     "not added to your chart" line, which would no longer be true. */
+  if (window.DrSeaySend && DrSeaySend.patientLink) {
+    DrSeaySend.notice(document.getElementById('dr-seay-gate-notice'));
+    document.getElementById('cap-disclaimer').textContent =
+      'This is a public educational tool. We do not sell or share your information.';
+  }
 
 })();
 </script>

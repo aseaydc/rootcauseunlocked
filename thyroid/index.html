@@ -138,6 +138,7 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
   }
 }
 </script>
+<script src="/assets/dr-seay-send.js"></script>
 </head>
 <body>
 
@@ -237,10 +238,14 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
           <input type="checkbox" id="cap-sms">
           <span>Optional: text me too. Message and data rates may apply. Reply STOP to opt out.</span>
         </label>
+        <div id="dr-seay-gate-notice"></div>
         <button class="btn btn-cta" id="btn-submit">Show my full results</button>
-        <p class="disclaimer">This is a public educational tool. It is not part of any medical record, and your answers are not added to your chart. We do not sell or share your information.</p>
+        <p class="disclaimer" id="cap-disclaimer">This is a public educational tool. It is not part of any medical record, and your answers are not added to your chart. We do not sell or share your information.</p>
       </div>
     </div>
+
+    <!-- Send to Dr. Seay (assets/dr-seay-send.js). Empty and hidden until the sender is configured. -->
+    <div id="dr-seay-send"></div>
 
     <div class="card">
       <h2>Your workup, in order</h2>
@@ -1007,6 +1012,31 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
       '<p>Check your inbox. If it is not there in a few minutes, look in promotions or spam and drag it across, which also helps the rest arrive.</p>' +
       '</div>';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    /* Send to Dr. Seay: automatic on a ?patient=1 link, a button otherwise. Optional,
+       so any failure leaves the results exactly as they are. */
+    try {
+      if (window.DrSeaySend) {
+        DrSeaySend.mount(document.getElementById('dr-seay-send'), {
+          quiz: 'Thyroid screener',
+          cardClass: 'card',
+          btnClass: 'btn btn-cta',
+          headTag: 'h2',
+          fallback: 'or use Print or save as PDF at the bottom of this page.',
+          collect: function () {
+            return {
+              name: name,
+              email: email,
+              phone: phone,
+              results: DrSeaySend.textOf([
+                '#s-result .result-head', '#res-alerts', '#s-result .retest-box',
+                document.getElementById('res-steps').closest('.card')
+              ])
+            };
+          }
+        });
+      }
+    } catch (e) { /* optional */ }
   }
 
   /* ---------- helpers ---------- */
@@ -1090,6 +1120,14 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
   document.getElementById('btn-submit').addEventListener('click', submit);
   document.getElementById('btn-print').addEventListener('click', function () { window.print(); });
   document.getElementById('btn-restart').addEventListener('click', function () { window.location.reload(); });
+
+  /* On a Dr. Seay patient link, say up front that the results go to him, and drop the
+     "not added to your chart" line, which would no longer be true. */
+  if (window.DrSeaySend && DrSeaySend.patientLink) {
+    DrSeaySend.notice(document.getElementById('dr-seay-gate-notice'));
+    document.getElementById('cap-disclaimer').textContent =
+      'This is a public educational tool. We do not sell or share your information.';
+  }
 
 })();
 </script>

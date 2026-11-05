@@ -8,6 +8,7 @@
 <meta name="description" content="Map your symptom pattern across 55 conditions with a free educational assessment. No account required, and results appear immediately.">
 <link rel="canonical" href="https://rootcauseunlocked.com/quiz/">
 <link rel="icon" href="/assets/favicon.png">
+<script src="/assets/dr-seay-send.js"></script>
 <meta property="og:title" content="Free Root Cause Symptom Assessment | Root Cause Unlocked">
 <meta property="og:description" content="Map your symptom pattern across 55 conditions with a free educational assessment. No account required, and results appear immediately.">
 <meta property="og:image" content="https://rootcauseunlocked.com/assets/logo-lockup.png">
@@ -443,6 +444,9 @@ button,input,select{font-family:inherit}button:focus-visible,a:focus-visible,inp
     <div id="all-bars"></div>
   </div>
 
+  <!-- Send to Dr. Seay (assets/dr-seay-send.js). Empty and hidden until the sender is configured. -->
+  <div id="dr-seay-send"></div>
+
   <div class="consult-card">
     <h3>Ready to Take the Next Step?</h3>
     <p>Your symptom map pinpoints where to investigate, but root cause healing requires advanced functional lab testing and a personalized clinical protocol. Schedule your Root Health functional medicine consultation to turn these insights into a real action plan.</p>
@@ -683,6 +687,7 @@ function buildUI() {
 function handleCheck(cb) {
   cb.closest('.symptom-label').classList.toggle('checked', cb.checked);
   updateEarlyExit();
+  if (cb.checked) rcuFunnelPing('started');
 }
 
 /* Reveals "See My Results Now" once there is enough checked to score.
@@ -790,6 +795,7 @@ function generateResults() {
     return;
   }
   document.getElementById('val-msg').style.display = 'none';
+  rcuFunnelPing('gate_shown');
   // Pre-fill gate first name if available
   document.getElementById('gate-fname').value = fname;
   // Show email gate; results render only after form submitted
@@ -1171,6 +1177,7 @@ function submitEmailGate() {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { err.textContent = 'Please enter a valid email address.'; err.style.display = 'block'; return; }
   if (!consent) { err.textContent = 'Please check the box so we can send your results.'; err.style.display = 'block'; return; }
   err.style.display = 'none';
+  rcuFunnelPing('emailed');
   const scored = scoreAll();
   const top = scored[0];
   const concern = document.getElementById('concern').value.trim();
@@ -1276,6 +1283,10 @@ function doShowResults() {
   document.getElementById('results-section').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  // Send to Dr. Seay: automatic on a ?patient=1 link, a button otherwise. Optional,
+  // so any failure leaves the results exactly as they are.
+  try { mountDrSeaySend(fullName, concern); } catch (e) { /* optional */ }
+
   // Animate bars
   setTimeout(() => {
     document.querySelectorAll('[data-w]').forEach(el => {
@@ -1330,7 +1341,12 @@ function pickOffer(ranked) {
   // their number two and three were both on sale. That happened for real on 2026-08-22:
   // a lead scored 100 on insomnia and saw no offer while brain and hormones sat unsold.
   // Walk down the ranking and offer the first pattern that has something behind it.
-  let list = Array.isArray(ranked) ? ranked : [ranked];
+  // Only patterns the person actually scored on: without this filter the walk ran past
+  // their last positive result into the 0% rows and offered, for example, the Reflux
+  // guide to someone who checked no reflux symptoms (outside audit 2026-11-04, confirmed
+  // in code). With nothing positive on sale, no card shows and the nurture emails
+  // point to the shop instead.
+  let list = (Array.isArray(ranked) ? ranked : [ranked]).filter((c) => c && c.pct > 0);
 
   // If a downstream syndrome is their top result, reorder so its best-scoring
   // driver is considered first. Their own ranking decides which driver, so a
@@ -1535,11 +1551,70 @@ rcuWireBooking();
         <input id="gate-sms-consent" type="checkbox" style="margin-top:3px;flex-shrink:0;">
         <span>Text me my results and reminders if I entered a phone number. Msg and data rates may apply. Reply STOP to opt out.</span>
       </label>
+      <div id="dr-seay-gate-notice"></div>
       <div id="gate-error" style="color:#c0392b;font-family:Arial,sans-serif;font-size:0.82rem;display:none;padding:2px 0;"></div>
       <button onclick="submitEmailGate()" style="background:var(--cta);color:#fff;border:none;border-radius:24px;padding:13px 28px;font-family:Arial,sans-serif;font-size:0.96rem;font-weight:700;cursor:pointer;margin-top:2px;letter-spacing:0.02em;transition:background 0.18s;" onmouseover="this.style.background='var(--cta-hover)'" onmouseout="this.style.background='var(--cta)'">See My Results &#8594;</button>
     </div>
   </div>
 </div>
+<script>
+/* Funnel step pings (added 2026-11-04), the same pattern /thyroid has used since 10-01:
+   path /_funnel/quiz/<step> in Relay's pageview table, so pageviews vs first symptom
+   checked vs email gate shown vs emailed can be counted. Each step fires once per
+   page load. No personal data, skips local. */
+var rcuFunnelSent = {};
+function rcuFunnelPing(step) {
+  try {
+    if (rcuFunnelSent[step]) return;
+    rcuFunnelSent[step] = true;
+    if (window.location.protocol.indexOf('http') !== 0) return;
+    if (/^(localhost|127\.|192\.168\.)/.test(window.location.hostname)) return;
+    fetch('https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({
+        intake_key: RELAY_INTAKE_KEY,
+        path: '/_funnel/quiz/' + step,
+        search: window.location.search.slice(0, 300),
+        referrer: (document.referrer || '').slice(0, 300)
+      }),
+      keepalive: true
+    }).catch(function () {});
+  } catch (e) { /* tracking must never break the page */ }
+}
+
+/* Send to Dr. Seay (added 2026-11-04). The shared script holds the endpoint; this page
+   only says what its results are. */
+if (window.DrSeaySend) DrSeaySend.notice(document.getElementById('dr-seay-gate-notice'));
+
+function mountDrSeaySend(fullName, concern) {
+  if (!window.DrSeaySend) return;
+  DrSeaySend.mount(document.getElementById('dr-seay-send'), {
+    quiz: 'Main quiz (55 conditions)',
+    cardClass: 'programs-card',
+    btnClass: 'btn-consult',
+    headTag: 'h3',
+    fallback: 'or take a screenshot of this page.',
+    collect: function () {
+      return {
+        name: fullName,
+        email: document.getElementById('gate-email').value.trim(),
+        phone: document.getElementById('gate-phone').value.trim(),
+        concern: concern,
+        results: [
+          DrSeaySend.textOf(['#res-name', '#res-date', '#results-intro', '#rcu-domain-strip', '#rcu-delta-card']),
+          'YOUR TOP PRIORITY ROOT CAUSE AREAS\n\n' + DrSeaySend.textOf(['#top3-cards']),
+          DrSeaySend.textOf(['#results-section .programs-card:not(#rcu-tracker-cta):not(.drs-card)', '#results-section .all-results-card'])
+        ].filter(Boolean).join('\n\n')
+      };
+    },
+    onSent: function () {
+      var note = document.querySelector('#results-section .res-saved-note');
+      if (note) note.textContent = 'Your results are saved on this device, and a copy was sent to Dr. Seay.';
+    }
+  });
+}
+</script>
 <script>
 /* First-party pageview ping to Relay (added 2026-07-30). Create-only, same
    public intake_key posture as lead capture. No cookies, no vendor. Sent as
