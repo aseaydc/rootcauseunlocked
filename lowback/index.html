@@ -1237,6 +1237,20 @@ body{font-family:Georgia,'Times New Roman',serif;background:var(--warm-white);co
     } catch (e) { /* tracking must never break the page */ }
   }
 
+  /* Booking intent pings (added 2026-11-09): book_click = a Jane booking link,
+     discovery_click = a link to /discovery. Same posture as the other steps. */
+  document.addEventListener('click', function (e) {
+    try {
+      var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+      if (!a) return;
+      var step = a.href.indexOf('janeapp.com') !== -1 ? 'book_click'
+               : a.href.indexOf('/discovery') !== -1 ? 'discovery_click' : '';
+      if (!step) return;
+      document.documentElement.setAttribute('data-last-funnel', step);
+      funnelPing(step);
+    } catch (err) { /* tracking must never break the page */ }
+  });
+
   /* ---------- events ---------- */
 
   document.getElementById('btn-start').addEventListener('click', function () {

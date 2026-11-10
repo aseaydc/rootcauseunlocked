@@ -321,5 +321,42 @@
   } catch (e) { /* tracking must never break the page */ }
 })();
 </script>
+
+<script>
+/* Booking click ping (added 2026-11-09): path /_funnel/discovery/book_click in Relay's
+   pageview table when a Jane booking link is pressed. Same posture as the pageview ping
+   above: no personal data, skips local. */
+(function () {
+  var sent = {};
+  function funnelPing(step) {
+    try {
+      if (sent[step]) return;
+      sent[step] = true;
+      if (window.location.protocol.indexOf('http') !== 0) return;
+      if (/^(localhost|127\.|192\.168\.)/.test(window.location.hostname)) return;
+      fetch('https://ckxinvzkaxxqllzjmspj.supabase.co/functions/v1/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+        body: JSON.stringify({
+          intake_key: '97TfHjb8duWiZayVd6dzVnrt',
+          path: '/_funnel/discovery/' + step,
+          search: window.location.search.slice(0, 300),
+          referrer: (document.referrer || '').slice(0, 300)
+        }),
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) { /* tracking must never break the page */ }
+  }
+  document.addEventListener('click', function (e) {
+    try {
+      var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+      if (!a) return;
+      if (a.href.indexOf('janeapp.com') === -1) return;
+      document.documentElement.setAttribute('data-last-funnel', 'book_click');
+      funnelPing('book_click');
+    } catch (err) { /* tracking must never break the page */ }
+  });
+})();
+</script>
 </body>
 </html>
