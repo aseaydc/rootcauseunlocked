@@ -270,26 +270,28 @@ button,input,select{font-family:inherit}button:focus-visible,a:focus-visible,inp
 </header>
 
 <!-- HERO -->
-<div class="hero">
-  <h2>Root Cause Symptom Assessment</h2>
+<style>
+.hero.hero-face{padding:26px 20px 22px;}
+.hero-face img.face{width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 14px rgba(58,102,164,0.22);display:block;margin:0 auto 8px;}
+.hero-face .who{font-family:Arial,sans-serif;font-size:0.74rem;letter-spacing:0.07em;text-transform:uppercase;font-weight:700;color:var(--text-light);margin-bottom:8px;}
+.hero-face .hero-div{margin:12px auto;}
+.start-label{font-family:Arial,sans-serif;font-size:1rem;font-weight:700;color:var(--text-dark);margin:18px 0 0;}
+.start-note{font-family:Arial,sans-serif;font-size:0.84rem;color:var(--text-light);line-height:1.5;margin:4px 0 0;}
+#quiz-section .tab-nav{margin:12px 0 14px;}
+</style>
+<div class="hero hero-face" id="hero">
+  <img class="face" src="/assets/adam-seay.jpg" alt="Adam Seay, D.C." width="84" height="84">
+  <div class="who">Adam Seay, D.C.</div>
+  <h2>Not sure what is behind your symptoms?</h2>
   <div class="hero-div"></div>
-  <p>Check every symptom you currently experience across <span id="hero-cond-count">55</span> health patterns. The educational scoring highlights symptom areas you may want to discuss with a qualified clinician.</p>
+  <p>Check what you are feeling. This free assessment scores your answers across <span id="hero-cond-count">55</span> health patterns and highlights symptom areas you may want to discuss with a qualified clinician.</p>
 </div>
 
 <!-- QUIZ SECTION -->
 <div class="main-wrap" id="quiz-section">
 
-  <div class="quiz-intro">
-    <strong>Instructions:</strong> Work through each of the <span id="hero-tab-count">8</span> category tabs and check every symptom you have experienced in the <strong>past 3 months</strong>. You do not need a formal diagnosis. Check anything that applies. Click <strong>Next Section</strong> after each tab. Your personalized results will generate after the final section.
-  </div>
-
-  <div class="progress-wrap">
-    <div class="progress-top">
-      <span class="progress-title" id="prog-title">Section 1 of 8 &middot; Gut &amp; Digestive</span>
-      <span class="progress-pct" id="prog-pct">17% complete</span>
-    </div>
-    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:17%"></div></div>
-  </div>
+  <p class="start-label" id="start-label">What bothers you most? Start there.</p>
+  <p class="start-note">Check every symptom from the past 3 months. You do not need a formal diagnosis. Tap <strong>Next Section</strong> after each of the <span id="hero-tab-count">8</span> areas.</p>
 
   <!-- TAB NAV -->
   <div class="tab-nav" id="tab-nav">
@@ -301,6 +303,14 @@ button,input,select{font-family:inherit}button:focus-visible,a:focus-visible,inp
     <button class="tab-btn" onclick="goToTab(5)">Toxicity &amp; Infections</button>
     <button class="tab-btn" onclick="goToTab(6)">Musculoskeletal</button>
     <button class="tab-btn" onclick="goToTab(7)">Organ Support</button>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-title" id="prog-title">Section 1 of 8 &middot; Gut &amp; Digestive</span>
+      <span class="progress-pct" id="prog-pct">17% complete</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:17%"></div></div>
   </div>
 
   <!-- TAB 0 -->
@@ -725,6 +735,9 @@ function goToTab(idx) {
   btns[currentTab].classList.remove('active');
   if (idx !== currentTab) btns[currentTab].classList.add('done');
   currentTab = idx;
+  /* Landing rebuild: once someone picks or moves to a section, the intro hero is done. */
+  var heroEl = document.getElementById('hero'); if (heroEl) heroEl.style.display = 'none';
+  var startEl = document.getElementById('start-label'); if (startEl) startEl.style.display = 'none';
   document.getElementById('tab-' + currentTab).classList.add('active');
   btns.forEach((b, i) => b.classList.toggle('active', i === currentTab));
   updateNav();
